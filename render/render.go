@@ -55,21 +55,24 @@ func render() {
 
 func update() {
 	running = !rl.WindowShouldClose()
-
+	game.MoveSnake()
+	game.Test()
+	println()
 }
 
 func Main(col *int, rows *int) {
 	screenWidth = int32(*col) * rectangleSize
 	screenHeight = int32(*rows) * rectangleSize
+	game.InitGame()
 	rl.InitWindow(screenWidth, screenHeight, "Hello there")
 	defer rl.CloseWindow()
 
 	//rl.SetExitKey(0)
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(2)
+
 	for running {
 		input()
 		update()
-		println(rl.IsKeyDown(rl.KeyD))
 		render()
 	}
 }

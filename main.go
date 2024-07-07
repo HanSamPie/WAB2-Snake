@@ -9,10 +9,8 @@ import (
 func main() {
 	fmt.Println("hello there")
 
-	game.Columns = 8
-	game.Rows = 8
-
-	game.InitGame()
+	game.Columns = 9
+	game.Rows = 9
 
 	render.Main(&game.Columns, &game.Rows)
 }

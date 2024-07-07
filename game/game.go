@@ -21,9 +21,9 @@ type Direction struct {
 }
 
 var (
-	Up    = Direction{x: 0, y: -1}
+	Up    = Direction{x: 0, y: 1}
 	Right = Direction{x: 1, y: 0}
-	Down  = Direction{x: 0, y: 1}
+	Down  = Direction{x: 0, y: -1}
 	Left  = Direction{x: -1, y: 0}
 )
 
@@ -56,6 +56,10 @@ func placeFood() {
 }
 
 func MoveSnake() {
+	if len(snake) == 0 {
+		InitGame()
+	}
+
 	//new position
 	newHead := position{
 		x: (snake[0].x + CurrentDirection.x + CurrentDirection.y),
@@ -82,13 +86,21 @@ func MoveSnake() {
 	}
 
 	//update Grid
-	for _, part := range snake {
-		Grid[part.x][part.y] = SNAKE
-	}
+	Grid[newHead.x][newHead.y] = SNAKE
+
 }
 
 func Test() {
-	InitGame()
+	//switch CurrentDirection {
+	//case Up:
+	//	println("UP")
+	//case Right:
+	//	println("RIGHT")
+	//case Down:
+	//	println("DOWN")
+	//case Left:
+	//	println("LEFT")
+	//}
 	for i := 0; i < Rows; i++ {
 		for j := 0; j < Columns; j++ {
 			print(Grid[i][j])
