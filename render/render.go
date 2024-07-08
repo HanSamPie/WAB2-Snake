@@ -34,7 +34,7 @@ func render() {
 
 	rl.ClearBackground(rl.RayWhite)
 
-	//breaks of rows || columns < 10
+	//TODO implement game over screen
 	for rows := 0; rows < int(screenHeight/rectangleSize); rows++ {
 		for columns := 0; columns < int(screenWidth/rectangleSize); columns++ {
 			if game.Grid[rows][columns] == game.SNAKE {
@@ -71,6 +71,8 @@ func Main(col *int, rows *int) {
 	rl.SetTargetFPS(2)
 
 	for running {
+		//TODO on checks input on FPS
+		//Try to set custom tick rate for update
 		input()
 		update()
 		render()
