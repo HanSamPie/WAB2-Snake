@@ -11,6 +11,7 @@ var (
 	rectangleSize int32 = 100
 	screenWidth   int32
 	screenHeight  int32
+	gameState     *game.GameState
 )
 
 func drawScene() {
@@ -19,13 +20,13 @@ func drawScene() {
 
 func input() {
 	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
-		game.CurrentDirection = game.Up
+		gameState.CurrentDirection = game.Up
 	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) {
-		game.CurrentDirection = game.Left
+		gameState.CurrentDirection = game.Left
 	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) {
-		game.CurrentDirection = game.Down
+		gameState.CurrentDirection = game.Down
 	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) {
-		game.CurrentDirection = game.Right
+		gameState.CurrentDirection = game.Right
 	}
 }
 
@@ -37,9 +38,9 @@ func render() {
 	//TODO implement game over screen
 	for rows := 0; rows < int(screenHeight/rectangleSize); rows++ {
 		for columns := 0; columns < int(screenWidth/rectangleSize); columns++ {
-			if game.Grid[rows][columns] == game.SNAKE {
+			if gameState.Grid[rows][columns] == game.SNAKE {
 				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Black)
-			} else if game.Grid[rows][columns] == game.FOOD {
+			} else if gameState.Grid[rows][columns] == game.FOOD {
 				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
 			} else if (rows+columns)%2 == 0 {
 				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
@@ -60,15 +61,18 @@ func update() {
 	println()
 }
 
-func Main(col *int, rows *int) {
-	screenWidth = int32(*col) * rectangleSize
-	screenHeight = int32(*rows) * rectangleSize
-	game.InitGame()
+func Main(state *game.GameState) {
+	cols := len(state.Grid)
+	rows := len(state.Grid[0])
+	gameState = state
+
+	screenWidth = int32(cols) * rectangleSize
+	screenHeight = int32(rows) * rectangleSize
 	rl.InitWindow(screenWidth, screenHeight, "Hello there")
 	defer rl.CloseWindow()
 
 	//rl.SetExitKey(0)
-	rl.SetTargetFPS(2)
+	rl.SetTargetFPS(1)
 
 	for running {
 		//TODO on checks input on FPS
