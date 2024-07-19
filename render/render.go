@@ -2,6 +2,7 @@ package render
 
 import (
 	"projects/game"
+	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -33,9 +34,8 @@ func input() {
 func render() {
 	rl.BeginDrawing()
 
-	rl.ClearBackground(rl.RayWhite)
-
 	//TODO implement game over screen
+	//TODO render snake based on gameState.Snake
 	for rows := 0; rows < int(screenHeight/rectangleSize); rows++ {
 		for columns := 0; columns < int(screenWidth/rectangleSize); columns++ {
 			if gameState.Grid[rows][columns] == game.SNAKE {
@@ -49,6 +49,9 @@ func render() {
 			}
 		}
 	}
+	score := "length: " + strconv.Itoa(len(gameState.Snake))
+	rl.DrawText(score, 15, 15, rectangleSize/3, rl.White)
+
 	drawScene()
 
 	rl.EndDrawing()
@@ -57,8 +60,6 @@ func render() {
 func update() {
 	running = !rl.WindowShouldClose()
 	game.MoveSnake()
-	game.Test()
-	println()
 }
 
 func Main(state *game.GameState) {
