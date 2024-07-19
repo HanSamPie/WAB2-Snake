@@ -20,13 +20,13 @@ func drawScene() {
 }
 
 func input() {
-	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
+	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && gameState.CurrentDirection != game.Down {
 		gameState.CurrentDirection = game.Up
-	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) {
+	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && gameState.CurrentDirection != game.Right {
 		gameState.CurrentDirection = game.Left
-	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) {
+	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) && gameState.CurrentDirection != game.Up {
 		gameState.CurrentDirection = game.Down
-	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) {
+	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) && gameState.CurrentDirection != game.Left {
 		gameState.CurrentDirection = game.Right
 	}
 }
