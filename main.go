@@ -6,11 +6,15 @@ import (
 	"projects/render"
 )
 
+func initGame(columns int, rows int) *game.GameState {
+	return game.InitGame(columns, rows)
+
+}
+
 func main() {
 	fmt.Println("hello there")
 
-	game.Columns = 9
-	game.Rows = 9
+	gameState := initGame(9, 9)
 
-	render.Main(&game.Columns, &game.Rows)
+	render.Main(gameState)
 }
