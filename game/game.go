@@ -3,7 +3,7 @@ package game
 import (
 	"fmt"
 
-	"golang.org/x/exp/rand"
+	"math/rand"
 )
 
 const (
@@ -44,6 +44,7 @@ func InitGame(columns int, rows int, debug bool) *GameState {
 	var state GameState
 	gameState = &state
 	state.debug = debug
+	state.CurrentDirection = Right
 	Columns = columns
 	Rows = rows
 
