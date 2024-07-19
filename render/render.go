@@ -9,7 +9,9 @@ import (
 
 var (
 	running             = true
-	rectangleSize int32 = 100
+	rectangleSize int32 = 50
+	FPS           int   = 90
+	frameCount    int   = 0
 	screenWidth   int32
 	screenHeight  int32
 	gameState     *game.GameState
@@ -34,6 +36,7 @@ func input() {
 func render() {
 	rl.BeginDrawing()
 
+	//TODO add border to map and move score into it
 	//TODO implement game over screen
 	//TODO render snake based on gameState.Snake
 	for rows := 0; rows < int(screenHeight/rectangleSize); rows++ {
@@ -59,7 +62,12 @@ func render() {
 
 func update() {
 	running = !rl.WindowShouldClose()
-	game.MoveSnake()
+	frameCount++
+	if frameCount == FPS/3 {
+		game.MoveSnake()
+		frameCount = 0
+	}
+
 }
 
 func Main(state *game.GameState) {
@@ -73,7 +81,8 @@ func Main(state *game.GameState) {
 	defer rl.CloseWindow()
 
 	//rl.SetExitKey(0)
-	rl.SetTargetFPS(1)
+
+	rl.SetTargetFPS(int32(FPS))
 
 	for running {
 		//TODO on checks input on FPS
