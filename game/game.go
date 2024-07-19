@@ -1,6 +1,10 @@
 package game
 
-import "golang.org/x/exp/rand"
+import (
+	"fmt"
+
+	"golang.org/x/exp/rand"
+)
 
 const (
 	EMPTY = iota
@@ -8,51 +12,63 @@ const (
 	FOOD
 )
 
-type Cell int
-
-var Grid [][]Cell
-
+type cell int
 type position struct {
-	x, y int
+	X, Y int
 }
-
-type Direction struct {
-	x, y int
+type direction struct {
+	X, Y int
+}
+type GameState struct {
+	CurrentDirection direction
+	Snake            []position
+	Grid             [][]cell
+	debug            bool
 }
 
 var (
-	Up    = Direction{x: 0, y: 1}
-	Down  = Direction{x: 0, y: -1}
-	Right = Direction{x: 1, y: 0}
-	Left  = Direction{x: -1, y: 0}
+	//TODO fix direction
+	Right    = direction{X: 0, Y: 1}
+	Left     = direction{X: 0, Y: -1}
+	Down     = direction{X: 1, Y: 0}
+	Up       = direction{X: -1, Y: 0}
+	GameOver = direction{X: 0, Y: 0}
 
-	GameOver = Direction{x: 0, y: 0}
+	Columns int
+	Rows    int
+
+	gameState *GameState
 )
 
-var CurrentDirection Direction
+func InitGame(columns int, rows int, debug bool) *GameState {
+	var state GameState
+	gameState = &state
+	state.debug = debug
+	Columns = columns
+	Rows = rows
 
-var Columns int
-var Rows int
-
-var snake []position
-
-func InitGame() {
-	Grid = make([][]Cell, Rows)
-	for i := range Grid {
-		Grid[i] = make([]Cell, Columns)
+	state.Grid = make([][]cell, Rows)
+	for i := range state.Grid {
+		state.Grid[i] = make([]cell, Columns)
 	}
-	initialPosition := position{x: Rows / 2, y: Columns / 3}
-	snake = append(snake, initialPosition)
-	Grid[snake[0].x][snake[0].y] = SNAKE
-	Grid[Rows/2][2*Columns/3] = FOOD
+	initialPosition := position{X: Rows / 2, Y: Columns / 3}
+	state.Snake = append(state.Snake, initialPosition)
+	state.Grid[state.Snake[0].X][state.Snake[0].Y] = SNAKE
+	state.Grid[Rows/2][2*Columns/3] = FOOD
+
+	if debug {
+		test()
+	}
+
+	return &state
 }
 
 func placeFood() {
 	for {
 		x := rand.Intn(Columns)
 		y := rand.Intn(Rows)
-		if Grid[x][y] == EMPTY {
-			Grid[x][y] = FOOD
+		if gameState.Grid[x][y] == EMPTY {
+			gameState.Grid[x][y] = FOOD
 			break
 		}
 	}
@@ -61,45 +77,57 @@ func placeFood() {
 func MoveSnake() {
 	//new position
 	newHead := position{
-		x: (snake[0].x + CurrentDirection.x + CurrentDirection.y),
-		y: (snake[0].y + CurrentDirection.x + CurrentDirection.y),
+		X: (gameState.Snake[0].X + gameState.CurrentDirection.X),
+		Y: (gameState.Snake[0].Y + gameState.CurrentDirection.Y),
 	}
 
 	//check collision
-	if Grid[newHead.x][newHead.y] == SNAKE {
+	if gameState.Grid[newHead.X][newHead.Y] == SNAKE {
 		//handle Game Over
-		CurrentDirection = GameOver
-	} else if newHead.x < 0 || newHead.y < 0 { //check boundary collision
+		gameState.CurrentDirection = GameOver
+	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
-		CurrentDirection = GameOver
-	} else if newHead.x > Columns || newHead.y > Rows {
+		gameState.CurrentDirection = GameOver
+	} else if newHead.X >= Columns || newHead.Y >= Rows {
 		//handle game over
-		CurrentDirection = GameOver
+		gameState.CurrentDirection = GameOver
 	}
 
 	//check food eaten
-	if Grid[newHead.x][newHead.y] == FOOD {
+	if gameState.Grid[newHead.X][newHead.Y] == FOOD {
 		placeFood()
-		Grid[newHead.x][newHead.y] = SNAKE
+		gameState.Grid[newHead.X][newHead.Y] = SNAKE
+
+		//add head
+		newSnake := append([]position{newHead}, gameState.Snake...)
+		gameState.Snake = newSnake
 	} else {
-		tail := snake[len(snake)-1]
-		snake = snake[:len(snake)-1]
+		//remove tail
+		tail := gameState.Snake[len(gameState.Snake)-1]
+		gameState.Snake = gameState.Snake[:len(gameState.Snake)-1]
+		//add head
+		newSnake := append([]position{newHead}, gameState.Snake...)
+		gameState.Snake = newSnake
 
-		//update Grid
-		Grid[tail.x][tail.y] = EMPTY
-		Grid[newHead.x][newHead.y] = SNAKE
+		//update grid
+		gameState.Grid[tail.X][tail.Y] = EMPTY
 	}
-
+	for _, part := range gameState.Snake {
+		gameState.Grid[part.X][part.Y] = SNAKE
+	}
+	if gameState.debug {
+		test()
+	}
 }
 
-func Test() {
-	//direcetion()
-
-	grid()
+func test() {
+	printDirection()
+	fmt.Println(gameState.Snake)
+	printGrid()
 }
 
-func direcetion() {
-	switch CurrentDirection {
+func printDirection() {
+	switch gameState.CurrentDirection {
 	case Up:
 		print("UP")
 	case Right:
@@ -109,15 +137,16 @@ func direcetion() {
 	case Left:
 		print("LEFT")
 	}
-	print(CurrentDirection.x)
-	println(CurrentDirection.y)
+	print(gameState.CurrentDirection.X)
+	println(gameState.CurrentDirection.Y)
 }
 
-func grid() {
+func printGrid() {
 	for i := 0; i < Rows; i++ {
 		for j := 0; j < Columns; j++ {
-			print(Grid[i][j])
+			print(gameState.Grid[i][j])
 		}
 		print("\n")
 	}
+	print("\n")
 }
