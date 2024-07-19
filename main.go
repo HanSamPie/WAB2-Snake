@@ -13,7 +13,7 @@ func initGame(columns int, rows int, debug bool) *game.GameState {
 func main() {
 	fmt.Println("hello there")
 
-	gameState := initGame(9, 9, false)
+	gameState := initGame(9, 9, true)
 
 	render.Main(gameState)
 }
