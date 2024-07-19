@@ -82,17 +82,21 @@ func MoveSnake() {
 	}
 
 	//check collision
-	if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
+	if newHead.X >= Columns || newHead.Y >= Rows {
 		//handle Game Over
 		gameState.CurrentDirection = GameOver
+		return
 	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
 		gameState.CurrentDirection = GameOver
-	} else if newHead.X >= Columns || newHead.Y >= Rows {
+		return
+	} else if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
 		//handle game over
 		gameState.CurrentDirection = GameOver
+		fmt.Println(">col/row")
+		return
 	}
-
+	fmt.Println("after collision")
 	//check food eaten
 	if gameState.Grid[newHead.Y][newHead.X] == FOOD {
 		placeFood()
@@ -102,6 +106,7 @@ func MoveSnake() {
 		newSnake := append([]position{newHead}, gameState.Snake...)
 		gameState.Snake = newSnake
 	} else {
+		fmt.Println("update branch")
 		//remove tail
 		tail := gameState.Snake[len(gameState.Snake)-1]
 		gameState.Snake = gameState.Snake[:len(gameState.Snake)-1]

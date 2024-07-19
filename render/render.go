@@ -63,7 +63,7 @@ func render() {
 func update() {
 	running = !rl.WindowShouldClose()
 	frameCount++
-	if frameCount == FPS/3 {
+	if frameCount == FPS/3 && gameState.CurrentDirection != game.GameOver {
 		game.MoveSnake()
 		frameCount = 0
 	}
