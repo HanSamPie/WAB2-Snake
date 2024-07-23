@@ -16,11 +16,9 @@ type cell int
 type position struct {
 	X, Y int
 }
-type direction struct {
-	X, Y int
-}
+type Direction position
 type GameState struct {
-	CurrentDirection direction
+	CurrentDirection Direction
 	Snake            []position
 	Grid             [][]cell
 	Columns          int
@@ -29,11 +27,11 @@ type GameState struct {
 }
 
 var (
-	Up       = direction{X: 0, Y: -1}
-	Down     = direction{X: 0, Y: 1}
-	Right    = direction{X: 1, Y: 0}
-	Left     = direction{X: -1, Y: 0}
-	GameOver = direction{X: 0, Y: 0}
+	Up       = Direction{X: 0, Y: -1}
+	Down     = Direction{X: 0, Y: 1}
+	Right    = Direction{X: 1, Y: 0}
+	Left     = Direction{X: -1, Y: 0}
+	GameOver = Direction{X: 0, Y: 0}
 
 	gameState *GameState
 )
