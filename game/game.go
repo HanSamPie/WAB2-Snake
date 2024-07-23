@@ -23,6 +23,8 @@ type GameState struct {
 	CurrentDirection direction
 	Snake            []position
 	Grid             [][]cell
+	Columns          int
+	Rows             int
 	debug            bool
 }
 
@@ -33,9 +35,6 @@ var (
 	Left     = direction{X: -1, Y: 0}
 	GameOver = direction{X: 0, Y: 0}
 
-	Columns int
-	Rows    int
-
 	gameState *GameState
 )
 
@@ -44,17 +43,17 @@ func InitGame(columns int, rows int, debug bool) *GameState {
 	gameState = &state
 	state.debug = debug
 	state.CurrentDirection = Right
-	Columns = columns
-	Rows = rows
+	state.Columns = columns
+	state.Rows = rows
 
-	state.Grid = make([][]cell, Rows)
+	state.Grid = make([][]cell, state.Rows)
 	for i := range state.Grid {
-		state.Grid[i] = make([]cell, Columns)
+		state.Grid[i] = make([]cell, state.Columns)
 	}
-	initialPosition := position{X: Rows / 3, Y: Columns / 2}
+	initialPosition := position{X: state.Rows / 3, Y: state.Columns / 2}
 	state.Snake = append(state.Snake, initialPosition)
 	state.Grid[state.Snake[0].Y][state.Snake[0].X] = SNAKE
-	state.Grid[Rows/2][2*Columns/3] = FOOD
+	state.Grid[state.Rows/2][2*state.Columns/3] = FOOD
 
 	if debug {
 		test()
@@ -65,8 +64,8 @@ func InitGame(columns int, rows int, debug bool) *GameState {
 
 func placeFood() {
 	for {
-		x := rand.Intn(Columns)
-		y := rand.Intn(Rows)
+		x := rand.Intn(gameState.Columns)
+		y := rand.Intn(gameState.Rows)
 		if gameState.Grid[y][x] == EMPTY {
 			gameState.Grid[y][x] = FOOD
 			break
@@ -82,7 +81,7 @@ func MoveSnake() {
 	}
 
 	//check collision
-	if newHead.X >= Columns || newHead.Y >= Rows {
+	if newHead.X >= gameState.Columns || newHead.Y >= gameState.Rows {
 		//handle Game Over
 		gameState.CurrentDirection = GameOver
 		return
@@ -93,7 +92,6 @@ func MoveSnake() {
 	} else if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
 		//handle game over
 		gameState.CurrentDirection = GameOver
-		fmt.Println(">col/row")
 		return
 	}
 	fmt.Println("after collision")
@@ -147,8 +145,8 @@ func printDirection() {
 }
 
 func printGrid() {
-	for i := 0; i < Rows; i++ {
-		for j := 0; j < Columns; j++ {
+	for i := 0; i < gameState.Rows; i++ {
+		for j := 0; j < gameState.Columns; j++ {
 			print(gameState.Grid[i][j])
 		}
 		print("\n")

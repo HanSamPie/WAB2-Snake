@@ -39,16 +39,17 @@ func render() {
 	//TODO add border to map and move score into it
 	//TODO implement game over screen
 	//TODO render snake based on gameState.Snake
-	for rows := 0; rows < int(screenHeight/rectangleSize); rows++ {
-		for columns := 0; columns < int(screenWidth/rectangleSize); columns++ {
+	rl.ClearBackground(rl.DarkBlue)
+	for rows := 0; rows < gameState.Rows; rows++ {
+		for columns := 0; columns < gameState.Columns; columns++ {
 			if gameState.Grid[rows][columns] == game.SNAKE {
-				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Black)
+				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Black)
 			} else if gameState.Grid[rows][columns] == game.FOOD {
-				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
+				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Red)
 			} else if (rows+columns)%2 == 0 {
-				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
+				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Green)
 			} else {
-				rl.DrawRectangle(int32(columns)*rectangleSize, int32(rows)*rectangleSize, rectangleSize, rectangleSize, rl.Lime)
+				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Lime)
 			}
 		}
 	}
@@ -71,12 +72,10 @@ func update() {
 }
 
 func Main(state *game.GameState) {
-	cols := len(state.Grid)
-	rows := len(state.Grid[0])
 	gameState = state
 
-	screenWidth = int32(cols) * rectangleSize
-	screenHeight = int32(rows) * rectangleSize
+	screenWidth = 100 + (int32(gameState.Columns) * rectangleSize)
+	screenHeight = 100 + (int32(gameState.Rows) * rectangleSize)
 	rl.InitWindow(screenWidth, screenHeight, "Hello there")
 	defer rl.CloseWindow()
 
