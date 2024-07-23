@@ -1,7 +1,18 @@
 package render
 
 import (
+	"projects/game"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+const (
+	vertical = iota
+	horizontal
+	leftTop
+	leftDown
+	rightTop
+	rightDown
 )
 
 func renderSnake() {
@@ -11,6 +22,24 @@ func renderSnake() {
 	cornerLeftDown(1, 1)
 	cornerRightTop(2, 1)
 	cornerRightDown(3, 1)
+
+	for i, part := range gameState.Snake {
+		neighbour := checkNeighbours(part.X, part.Y)
+		if i == 1 {
+			if neighbour == horizontal {
+				tubeVertical(int32(part.X), int32(part.Y))
+			} else {
+				tubeHorizontal(int32(part.X), int32(part.Y))
+			}
+		}
+	}
+}
+
+func checkNeighbours(x int, y int) {
+
+	if gameState.Grid[y][x-1] == game.SNAKE && gameState.Grid[y+1][x] == game.SNAKE && (x-1 >= 0 || y+1 <= gameState.Columns) {
+		cornerLeftTop(int32(x), int32(y))
+	}
 }
 
 func tubeVertical(x int32, y int32) {
