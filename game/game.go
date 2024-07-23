@@ -23,7 +23,7 @@ type GameState struct {
 	Grid             [][]cell
 	Columns          int
 	Rows             int
-	debug            bool
+	Debug            bool
 }
 
 var (
@@ -39,7 +39,7 @@ var (
 func InitGame(columns int, rows int, debug bool) *GameState {
 	var state GameState
 	gameState = &state
-	state.debug = debug
+	state.Debug = debug
 	state.CurrentDirection = Right
 	state.Columns = columns
 	state.Rows = rows
@@ -92,7 +92,6 @@ func MoveSnake() {
 		gameState.CurrentDirection = GameOver
 		return
 	}
-	fmt.Println("after collision")
 	//check food eaten
 	if gameState.Grid[newHead.Y][newHead.X] == FOOD {
 		placeFood()
@@ -102,7 +101,6 @@ func MoveSnake() {
 		newSnake := append([]position{newHead}, gameState.Snake...)
 		gameState.Snake = newSnake
 	} else {
-		fmt.Println("update branch")
 		//remove tail
 		tail := gameState.Snake[len(gameState.Snake)-1]
 		gameState.Snake = gameState.Snake[:len(gameState.Snake)-1]
@@ -116,7 +114,7 @@ func MoveSnake() {
 	for _, part := range gameState.Snake {
 		gameState.Grid[part.Y][part.X] = SNAKE
 	}
-	if gameState.debug {
+	if gameState.Debug {
 		test()
 	}
 }

@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"projects/game"
 	"strconv"
 
@@ -15,6 +16,7 @@ var (
 	screenWidth   int32
 	screenHeight  int32
 	gameState     *game.GameState
+	lastDirection game.Direction
 )
 
 func drawScene() {
@@ -22,13 +24,13 @@ func drawScene() {
 }
 
 func input() {
-	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && gameState.CurrentDirection != game.Down {
+	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
 		gameState.CurrentDirection = game.Up
-	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && gameState.CurrentDirection != game.Right {
+	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && lastDirection.X != 1 {
 		gameState.CurrentDirection = game.Left
-	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) && gameState.CurrentDirection != game.Up {
+	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) && lastDirection.Y != -1 {
 		gameState.CurrentDirection = game.Down
-	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) && gameState.CurrentDirection != game.Left {
+	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) && lastDirection.X != -1 {
 		gameState.CurrentDirection = game.Right
 	}
 }
@@ -66,7 +68,14 @@ func update() {
 	frameCount++
 	if frameCount == FPS/3 && gameState.CurrentDirection != game.GameOver {
 		game.MoveSnake()
+
 		frameCount = 0
+		lastDirection = gameState.CurrentDirection
+
+		if gameState.Debug {
+			fmt.Println(gameState.CurrentDirection)
+		}
+
 	}
 
 }
