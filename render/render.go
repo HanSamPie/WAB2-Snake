@@ -50,22 +50,6 @@ func renderBoard() {
 	}
 }
 
-func renderSnake() {
-	//tubeVertical
-	rl.DrawRectangle(((0+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (0+1)*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize, rl.Black)
-	fmt.Println((3 + 1) * rectangleSize)
-	//tubeHorizontal
-	rl.DrawRectangle(((1 + 1) * rectangleSize), (0+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize, int32(int(rectangleSize)*2/5), rl.Black)
-	//leftCenter
-	rl.DrawRectangle((2+1)*rectangleSize, int32(0+1)*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
-	//topCenter
-	rl.DrawRectangle((3+1)*rectangleSize+int32(int(rectangleSize)*3/10), (0+1)*rectangleSize, int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
-	//rightCenter
-	rl.DrawRectangle((4+1)*rectangleSize+int32(int(rectangleSize*3/10)), int32(0+1)*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
-	//downCenter
-	rl.DrawRectangle((5+1)*rectangleSize+int32(int(rectangleSize)*3/10), (0+1)*rectangleSize+int32(int(rectangleSize*3/10)), int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
-}
-
 func render() {
 	rl.BeginDrawing()
 
