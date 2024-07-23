@@ -24,9 +24,9 @@ func renderSnake() {
 	cornerRightDown(3, 1)
 
 	for i, part := range gameState.Snake {
-		neighbour := checkNeighbours(part.X, part.Y)
+		neighbor := checkNeighbors(part.X, part.Y)
 		if i == 1 {
-			if neighbour == horizontal {
+			if neighbor == horizontal {
 				tubeVertical(int32(part.X), int32(part.Y))
 			} else {
 				tubeHorizontal(int32(part.X), int32(part.Y))
@@ -35,8 +35,8 @@ func renderSnake() {
 	}
 }
 
-func checkNeighbours(x int, y int) {
-
+func checkNeighbors(x int, y int) {
+	//doesn't work, need to check Snake[n-1] and Snake[n+1]
 	if gameState.Grid[y][x-1] == game.SNAKE && gameState.Grid[y+1][x] == game.SNAKE && (x-1 >= 0 || y+1 <= gameState.Columns) {
 		cornerLeftTop(int32(x), int32(y))
 	}
