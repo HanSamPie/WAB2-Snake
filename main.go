@@ -5,6 +5,7 @@ import (
 	"projects/render"
 )
 
+// for MLP create head in game and pass direction to MLP
 func main() {
 	gameState := game.InitGame(15, 15, true)
 	render.Main(gameState)

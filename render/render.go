@@ -19,10 +19,6 @@ var (
 	lastDirection game.Direction
 )
 
-func drawScene() {
-	//for switch between menu etc
-}
-
 func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
 		gameState.CurrentDirection = game.Up
@@ -35,30 +31,54 @@ func input() {
 	}
 }
 
-func render() {
-	rl.BeginDrawing()
-
-	//TODO add border to map and move score into it
-	//TODO implement game over screen
-	//TODO render snake based on gameState.Snake
+func renderBoard() {
+	//renders boundary
 	rl.ClearBackground(rl.DarkBlue)
+	//renders checkered board
 	for rows := 0; rows < gameState.Rows; rows++ {
 		for columns := 0; columns < gameState.Columns; columns++ {
 			if gameState.Grid[rows][columns] == game.SNAKE {
-				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Black)
+				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Black)
 			} else if gameState.Grid[rows][columns] == game.FOOD {
-				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Red)
+				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
 			} else if (rows+columns)%2 == 0 {
-				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Green)
+				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
 			} else {
-				rl.DrawRectangle(int32(columns)*rectangleSize+50, int32(rows)*rectangleSize+50, rectangleSize, rectangleSize, rl.Lime)
+				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Lime)
 			}
 		}
 	}
+}
+
+func renderSnake() {
+	//tubeVertical
+	rl.DrawRectangle(((0+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (0+1)*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize, rl.Black)
+	fmt.Println((3 + 1) * rectangleSize)
+	//tubeHorizontal
+	rl.DrawRectangle(((1 + 1) * rectangleSize), (0+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize, int32(int(rectangleSize)*2/5), rl.Black)
+	//leftCenter
+	rl.DrawRectangle((2+1)*rectangleSize, int32(0+1)*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	//topCenter
+	rl.DrawRectangle((3+1)*rectangleSize+int32(int(rectangleSize)*3/10), (0+1)*rectangleSize, int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+	//rightCenter
+	rl.DrawRectangle((4+1)*rectangleSize+int32(int(rectangleSize*3/10)), int32(0+1)*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	//downCenter
+	rl.DrawRectangle((5+1)*rectangleSize+int32(int(rectangleSize)*3/10), (0+1)*rectangleSize+int32(int(rectangleSize*3/10)), int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+}
+
+func render() {
+	rl.BeginDrawing()
+
+	//TODO implement game over screen
+	//TODO render snake based on gameState.Snake
+	renderBoard()
+
+	renderSnake()
+
+	//renders score
+	//TODO maybe create render ui function
 	score := "length: " + strconv.Itoa(len(gameState.Snake))
 	rl.DrawText(score, 15, 15, rectangleSize/3, rl.White)
-
-	drawScene()
 
 	rl.EndDrawing()
 }
