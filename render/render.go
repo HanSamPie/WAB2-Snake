@@ -37,9 +37,9 @@ func renderBoard() {
 	//renders checkered board
 	for rows := 0; rows < gameState.Rows; rows++ {
 		for columns := 0; columns < gameState.Columns; columns++ {
-			if gameState.Grid[rows][columns] == game.SNAKE {
+			/*if gameState.Grid[rows][columns] == game.SNAKE {
 				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Black)
-			} else if gameState.Grid[rows][columns] == game.FOOD {
+			} else*/if gameState.Grid[rows][columns] == game.FOOD {
 				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
 			} else if (rows+columns)%2 == 0 {
 				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
@@ -100,7 +100,7 @@ func Main(state *game.GameState) {
 		//TODO on checks input on FPS
 		//Try to set custom tick rate for update
 		input()
-		update()
 		render()
+		update()
 	}
 }

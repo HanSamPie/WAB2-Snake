@@ -1,6 +1,7 @@
 package render
 
 import (
+	"log"
 	"projects/game"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -16,30 +17,85 @@ const (
 )
 
 func renderSnake() {
-	tubeVertical(0, 0)
-	tubeHorizontal(1, 0)
-	cornerLeftTop(0, 1)
-	cornerLeftDown(1, 1)
-	cornerRightTop(2, 1)
-	cornerRightDown(3, 1)
+	//tubeVertical(0, 0)
+	//tubeHorizontal(1, 0)
+	//cornerLeftTop(0, 1)
+	//cornerLeftDown(1, 1)
+	//cornerRightTop(2, 1)
+	//cornerRightDown(3, 1)
 
 	for i, part := range gameState.Snake {
-		neighbor := checkNeighbors(part.X, part.Y)
-		if i == 1 {
-			if neighbor == horizontal {
-				tubeVertical(int32(part.X), int32(part.Y))
-			} else {
-				tubeHorizontal(int32(part.X), int32(part.Y))
-			}
+		//ensure that you check neighbor is not run on the last part
+		if i == len(gameState.Snake)-1 {
+			return
+		}
+
+		neighbor := checkNeighbors(i)
+		if neighbor == horizontal {
+			tubeHorizontal(int32(part.X), int32(part.Y))
+		} else if neighbor == vertical {
+			tubeVertical(int32(part.X), int32(part.Y))
+		} else if neighbor == leftTop {
+			cornerLeftTop(int32(part.X), int32(part.Y))
+		} else if neighbor == leftDown {
+			cornerLeftDown(int32(part.X), int32(part.Y))
+		} else if neighbor == rightTop {
+			cornerRightTop(int32(part.X), int32(part.Y))
+		} else if neighbor == rightDown {
+			cornerRightDown(int32(part.X), int32(part.Y))
+		} else if neighbor == -1 {
+			log.Fatal("render snake neighbor -1; or in other words I fucked up")
 		}
 	}
 }
 
-func checkNeighbors(x int, y int) {
-	//doesn't work, need to check Snake[n-1] and Snake[n+1]
-	if gameState.Grid[y][x-1] == game.SNAKE && gameState.Grid[y+1][x] == game.SNAKE && (x-1 >= 0 || y+1 <= gameState.Columns) {
-		cornerLeftTop(int32(x), int32(y))
+func checkNeighbors(n int) int {
+	if n == 0 {
+		//case head
+		if gameState.CurrentDirection == game.Up || gameState.CurrentDirection == game.Down {
+			return vertical
+		} else {
+			return horizontal
+		}
+	} else if len(gameState.Snake) >= 2 && len(gameState.Snake)-1 == n {
+		//case tail
+		part0 := gameState.Snake[n]
+		previousPart := gameState.Snake[n-1]
+		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
+
+		if diffPrevious.X == 1 || diffPrevious.X == -1 {
+			return horizontal
+		} else if diffPrevious.Y == 1 || diffPrevious.Y == -1 {
+			return vertical
+		}
+	} else {
+		//case body
+		part0 := gameState.Snake[n]
+		previousPart := gameState.Snake[n-1]
+		nextPart := gameState.Snake[n+1]
+
+		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
+		diffNext := game.Direction{X: part0.X - nextPart.X, Y: part0.Y - nextPart.Y}
+		if (diffPrevious.X == 1 && diffNext.X == -1) || (diffPrevious.X == -1 && diffNext.X == 1) {
+			//case horizontal; both right to left and left to right
+			return horizontal
+		} else if (diffPrevious.Y == 1 && diffNext.Y == -1) || (diffPrevious.Y == -1 && diffNext.Y == 1) {
+			//case vertical; both up to down and down to up
+			return vertical
+		} else if (diffPrevious.X == 1 && diffNext.Y == 1) || (diffPrevious.Y == 1 && diffNext.X == 1) {
+			//case corner leftTop
+			return leftTop
+		} else if (diffPrevious.X == 1 && diffNext.Y == -1) || (diffPrevious.Y == -1 && diffNext.X == 1) {
+			//case leftDown
+			return leftDown
+		} else if (diffPrevious.X == -1 && diffNext.Y == 1) || (diffPrevious.Y == 1 && diffNext.X == -1) {
+			//case rightTop
+			return rightTop
+		} else if (diffPrevious.X == -1 && diffNext.Y == -1) || (diffPrevious.Y == -1 && diffNext.X == -1) {
+			//case rightDown
+		}
 	}
+	return -1
 }
 
 func tubeVertical(x int32, y int32) {
