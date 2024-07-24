@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log"
 	"projects/game"
 
@@ -17,13 +18,12 @@ const (
 )
 
 func renderSnake() {
-	//tubeVertical(0, 0)
-	//tubeHorizontal(1, 0)
-	//cornerLeftTop(0, 1)
-	//cornerLeftDown(1, 1)
-	//cornerRightTop(2, 1)
-	//cornerRightDown(3, 1)
 
+	//TODO shorten head and add eyes
+	//TODO visualize game over on snake somehow
+
+	//TODO doesnt access first two if's
+	//TODO game crashes on collision
 	for i, part := range gameState.Snake {
 		//ensure that you check neighbor is not run on the last part
 		if i == len(gameState.Snake)-1 {
@@ -43,7 +43,7 @@ func renderSnake() {
 			cornerRightTop(int32(part.X), int32(part.Y))
 		} else if neighbor == rightDown {
 			cornerRightDown(int32(part.X), int32(part.Y))
-		} else if neighbor == -1 {
+		} else if neighbor == -1 && gameState.CurrentDirection != game.GameOver {
 			log.Fatal("render snake neighbor -1; or in other words I fucked up")
 		}
 	}
@@ -52,17 +52,20 @@ func renderSnake() {
 func checkNeighbors(n int) int {
 	if n == 0 {
 		//case head
-		if gameState.CurrentDirection == game.Up || gameState.CurrentDirection == game.Down {
+		if lastDirection == game.Up || lastDirection == game.Down {
 			return vertical
-		} else {
+		} else if lastDirection == game.Left || lastDirection == game.Right {
 			return horizontal
 		}
+		fmt.Println("case head")
 	} else if len(gameState.Snake) >= 2 && len(gameState.Snake)-1 == n {
 		//case tail
 		part0 := gameState.Snake[n]
 		previousPart := gameState.Snake[n-1]
 		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
 
+		fmt.Print("case tail diffPre: ")
+		fmt.Println(diffPrevious)
 		if diffPrevious.X == 1 || diffPrevious.X == -1 {
 			return horizontal
 		} else if diffPrevious.Y == 1 || diffPrevious.Y == -1 {
@@ -76,6 +79,10 @@ func checkNeighbors(n int) int {
 
 		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
 		diffNext := game.Direction{X: part0.X - nextPart.X, Y: part0.Y - nextPart.Y}
+
+		fmt.Println("case body")
+		fmt.Println(diffPrevious)
+		fmt.Println(diffNext)
 		if (diffPrevious.X == 1 && diffNext.X == -1) || (diffPrevious.X == -1 && diffNext.X == 1) {
 			//case horizontal; both right to left and left to right
 			return horizontal
@@ -93,6 +100,7 @@ func checkNeighbors(n int) int {
 			return rightTop
 		} else if (diffPrevious.X == -1 && diffNext.Y == -1) || (diffPrevious.Y == -1 && diffNext.X == -1) {
 			//case rightDown
+			return rightDown
 		}
 	}
 	return -1
