@@ -111,9 +111,10 @@ func MoveSnake() {
 		//update grid
 		gameState.Grid[tail.Y][tail.X] = EMPTY
 	}
-	for _, part := range gameState.Snake {
-		gameState.Grid[part.Y][part.X] = SNAKE
-	}
+
+	//add newHead to grid
+	gameState.Grid[newHead.Y][newHead.X] = SNAKE
+
 	if gameState.Debug {
 		test()
 	}
