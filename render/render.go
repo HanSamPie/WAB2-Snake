@@ -58,8 +58,8 @@ func render() {
 
 	renderSnake()
 
-	//renders score
 	//TODO maybe create render ui function
+	//renders score
 	score := "length: " + strconv.Itoa(len(gameState.Snake))
 	rl.DrawText(score, 15, 15, rectangleSize/3, rl.White)
 

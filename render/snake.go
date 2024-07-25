@@ -20,15 +20,9 @@ const (
 
 func renderSnake() {
 
-	//TODO shorten head and add eyes
-	//TODO visualize game over on snake somehow
-
-	//TODO game crashes on collision
-
-	//TODO on game over render last state
-	//if gameState.CurrentDirection == game.GameOver {
-	//	return
-	//}
+	//TODO add eyes to head
+	//TODO fix bracket, typecasting and general math hell in this file
+	//TODO make tail smooth
 
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
@@ -106,20 +100,30 @@ func checkNeighbors(n int) int {
 }
 
 func tubeHeadVertical(x int32, y int32) {
-	//TODO add eyes
 	if lastDirection == game.Down {
 		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+		//eyes
+		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize, rectangleSize/int32(10), rectangleSize/int32(10), rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*6/10, (y+1)*rectangleSize, rectangleSize/int32(10), rectangleSize/int32(10), rl.White)
 	} else {
 		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize+(rectangleSize/2), int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+		//eyes
+		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*6/10, (y+1)*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
 	}
 }
 
 func tubeHeadHorizontal(x int32, y int32) {
-	//TODO add eyes
 	if lastDirection == game.Right {
 		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+		//eyes
+		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
 	} else {
 		rl.DrawRectangle((x+1)*rectangleSize+(rectangleSize/2), (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+		//eyes
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*9/10, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*9/10, (y+1)*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
 	}
 }
 
