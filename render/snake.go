@@ -19,29 +19,28 @@ const (
 )
 
 func renderSnake() {
-
-	//TODO add eyes to head
 	//TODO fix bracket, typecasting and general math hell in this file
 	//TODO make tail smooth
-
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
+		x := int32(part.X)
+		y := int32(part.Y)
 		if neighbor == headVertical {
-			tubeHeadVertical(int32(part.X), int32(part.Y))
+			tubeHeadVertical(x, y)
 		} else if neighbor == headHorizontal {
-			tubeHeadHorizontal(int32(part.X), int32(part.Y))
+			tubeHeadHorizontal(x, y)
 		} else if neighbor == horizontal {
-			tubeHorizontal(int32(part.X), int32(part.Y))
+			tubeHorizontal(x, y)
 		} else if neighbor == vertical {
-			tubeVertical(int32(part.X), int32(part.Y))
+			tubeVertical(x, y)
 		} else if neighbor == leftTop {
-			cornerLeftTop(int32(part.X), int32(part.Y))
+			cornerLeftTop(x, y)
 		} else if neighbor == leftDown {
-			cornerLeftDown(int32(part.X), int32(part.Y))
+			cornerLeftDown(x, y)
 		} else if neighbor == rightTop {
-			cornerRightTop(int32(part.X), int32(part.Y))
+			cornerRightTop(x, y)
 		} else if neighbor == rightDown {
-			cornerRightDown(int32(part.X), int32(part.Y))
+			cornerRightDown(x, y)
 		} else if neighbor == -1 && gameState.CurrentDirection != game.GameOver {
 			log.Fatal("render snake neighbor -1; or in other words I fucked up")
 		}
@@ -101,28 +100,28 @@ func checkNeighbors(n int) int {
 
 func tubeHeadVertical(x int32, y int32) {
 	if lastDirection == game.Down {
-		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+		rl.DrawRectangle(((x+1)*rectangleSize + rectangleSize*3/10), (y+1)*rectangleSize, rectangleSize*2/5, rectangleSize/2, rl.Black)
 		//eyes
-		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize, rectangleSize/int32(10), rectangleSize/int32(10), rl.White)
-		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*6/10, (y+1)*rectangleSize, rectangleSize/int32(10), rectangleSize/int32(10), rl.White)
+		rl.DrawRectangle(((x+1)*rectangleSize + rectangleSize*3/10), (y+1)*rectangleSize, rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*6/10, (y+1)*rectangleSize, rectangleSize/10, rectangleSize/10, rl.White)
 	} else {
-		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize+(rectangleSize/2), int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+		rl.DrawRectangle(((x+1)*rectangleSize + rectangleSize*3/10), (y+1)*rectangleSize+(rectangleSize/2), rectangleSize*2/5, rectangleSize/2, rl.Black)
 		//eyes
-		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle(((x+1)*rectangleSize + rectangleSize*3/10), (y+1)*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*6/10, (y+1)*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
 	}
 }
 
 func tubeHeadHorizontal(x int32, y int32) {
 	if lastDirection == game.Right {
-		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+rectangleSize*3/10, rectangleSize/2, rectangleSize*2/5, rl.Black)
 		//eyes
-		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+rectangleSize*3/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
 	} else {
-		rl.DrawRectangle((x+1)*rectangleSize+(rectangleSize/2), (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+		rl.DrawRectangle((x+1)*rectangleSize+(rectangleSize/2), (y+1)*rectangleSize+rectangleSize*3/10, rectangleSize/2, rectangleSize*2/5, rl.Black)
 		//eyes
-		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*9/10, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*9/10, (y+1)*rectangleSize+rectangleSize*3/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle((x+1)*rectangleSize+rectangleSize*9/10, (y+1)*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
 	}
 }
