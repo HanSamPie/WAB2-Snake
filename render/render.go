@@ -69,7 +69,7 @@ func render() {
 func update() {
 	running = !rl.WindowShouldClose()
 	frameCount++
-	if frameCount == FPS/3 && gameState.CurrentDirection != game.GameOver {
+	if frameCount == FPS/6 && gameState.CurrentDirection != game.GameOver {
 		game.MoveSnake()
 
 		frameCount = 0
@@ -98,8 +98,6 @@ func Main(state *game.GameState) {
 	rl.SetTargetFPS(int32(FPS))
 
 	for running {
-		//TODO on checks input on FPS
-		//Try to set custom tick rate for update
 		input()
 		update()
 		render()
