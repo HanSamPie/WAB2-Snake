@@ -16,7 +16,7 @@ var (
 	screenWidth   int32
 	screenHeight  int32
 	gameState     *game.GameState
-	lastDirection game.Direction
+	lastDirection = game.Right
 )
 
 func input() {
@@ -54,7 +54,6 @@ func render() {
 	rl.BeginDrawing()
 
 	//TODO implement game over screen
-	//TODO render snake based on gameState.Snake
 	renderBoard()
 
 	renderSnake()
@@ -74,7 +73,9 @@ func update() {
 		game.MoveSnake()
 
 		frameCount = 0
-		lastDirection = gameState.CurrentDirection
+		if gameState.CurrentDirection != game.GameOver {
+			lastDirection = gameState.CurrentDirection
+		}
 
 		if gameState.Debug {
 			fmt.Println(gameState.CurrentDirection)
@@ -100,7 +101,7 @@ func Main(state *game.GameState) {
 		//TODO on checks input on FPS
 		//Try to set custom tick rate for update
 		input()
-		render()
 		update()
+		render()
 	}
 }

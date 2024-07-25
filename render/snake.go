@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"log"
 	"projects/game"
 
@@ -22,14 +21,14 @@ func renderSnake() {
 	//TODO shorten head and add eyes
 	//TODO visualize game over on snake somehow
 
-	//TODO doesnt access first two if's
 	//TODO game crashes on collision
-	for i, part := range gameState.Snake {
-		//ensure that you check neighbor is not run on the last part
-		if i == len(gameState.Snake)-1 {
-			return
-		}
 
+	//TODO on game over render last state
+	//if gameState.CurrentDirection == game.GameOver {
+	//	return
+	//}
+
+	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
 		if neighbor == horizontal {
 			tubeHorizontal(int32(part.X), int32(part.Y))
@@ -57,15 +56,12 @@ func checkNeighbors(n int) int {
 		} else if lastDirection == game.Left || lastDirection == game.Right {
 			return horizontal
 		}
-		fmt.Println("case head")
 	} else if len(gameState.Snake) >= 2 && len(gameState.Snake)-1 == n {
 		//case tail
 		part0 := gameState.Snake[n]
 		previousPart := gameState.Snake[n-1]
 		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
 
-		fmt.Print("case tail diffPre: ")
-		fmt.Println(diffPrevious)
 		if diffPrevious.X == 1 || diffPrevious.X == -1 {
 			return horizontal
 		} else if diffPrevious.Y == 1 || diffPrevious.Y == -1 {
@@ -80,9 +76,6 @@ func checkNeighbors(n int) int {
 		diffPrevious := game.Direction{X: part0.X - previousPart.X, Y: part0.Y - previousPart.Y}
 		diffNext := game.Direction{X: part0.X - nextPart.X, Y: part0.Y - nextPart.Y}
 
-		fmt.Println("case body")
-		fmt.Println(diffPrevious)
-		fmt.Println(diffNext)
 		if (diffPrevious.X == 1 && diffNext.X == -1) || (diffPrevious.X == -1 && diffNext.X == 1) {
 			//case horizontal; both right to left and left to right
 			return horizontal
