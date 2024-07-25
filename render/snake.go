@@ -8,7 +8,9 @@ import (
 )
 
 const (
-	vertical = iota
+	headVertical = iota
+	headHorizontal
+	vertical
 	horizontal
 	leftTop
 	leftDown
@@ -30,7 +32,11 @@ func renderSnake() {
 
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
-		if neighbor == horizontal {
+		if neighbor == headVertical {
+			tubeHeadVertical(int32(part.X), int32(part.Y))
+		} else if neighbor == headHorizontal {
+			tubeHeadHorizontal(int32(part.X), int32(part.Y))
+		} else if neighbor == horizontal {
 			tubeHorizontal(int32(part.X), int32(part.Y))
 		} else if neighbor == vertical {
 			tubeVertical(int32(part.X), int32(part.Y))
@@ -52,9 +58,9 @@ func checkNeighbors(n int) int {
 	if n == 0 {
 		//case head
 		if lastDirection == game.Up || lastDirection == game.Down {
-			return vertical
+			return headVertical
 		} else if lastDirection == game.Left || lastDirection == game.Right {
-			return horizontal
+			return headHorizontal
 		}
 	} else if len(gameState.Snake) >= 2 && len(gameState.Snake)-1 == n {
 		//case tail
@@ -97,6 +103,24 @@ func checkNeighbors(n int) int {
 		}
 	}
 	return -1
+}
+
+func tubeHeadVertical(x int32, y int32) {
+	//TODO add eyes
+	if lastDirection == game.Down {
+		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+	} else {
+		rl.DrawRectangle(((x+1)*rectangleSize + int32(int(rectangleSize)*3/10)), (y+1)*rectangleSize+(rectangleSize/2), int32(int(rectangleSize)*2/5), rectangleSize/2, rl.Black)
+	}
+}
+
+func tubeHeadHorizontal(x int32, y int32) {
+	//TODO add eyes
+	if lastDirection == game.Right {
+		rl.DrawRectangle((x+1)*rectangleSize, (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+	} else {
+		rl.DrawRectangle((x+1)*rectangleSize+(rectangleSize/2), (y+1)*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize/2, int32(int(rectangleSize)*2/5), rl.Black)
+	}
 }
 
 func tubeVertical(x int32, y int32) {
