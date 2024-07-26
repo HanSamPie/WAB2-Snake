@@ -21,12 +21,16 @@ var (
 
 func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
+		//change direction to up
 		gameState.CurrentDirection = game.Up
 	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && lastDirection.X != 1 {
+		//change direction to left
 		gameState.CurrentDirection = game.Left
 	} else if rl.IsKeyDown(rl.KeyS) || rl.IsKeyDown(rl.KeyDown) && lastDirection.Y != -1 {
+		//change direction to down
 		gameState.CurrentDirection = game.Down
 	} else if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) && lastDirection.X != -1 {
+		//change direction to right
 		gameState.CurrentDirection = game.Right
 	}
 }
@@ -37,9 +41,7 @@ func renderBoard() {
 	//renders checkered board
 	for rows := 0; rows < gameState.Rows; rows++ {
 		for columns := 0; columns < gameState.Columns; columns++ {
-			/*if gameState.Grid[rows][columns] == game.SNAKE {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Black)
-			} else*/if gameState.Grid[rows][columns] == game.FOOD {
+			if gameState.Grid[rows][columns] == game.FOOD {
 				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
 			} else if (rows+columns)%2 == 0 {
 				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
@@ -58,10 +60,9 @@ func render() {
 
 	renderSnake()
 
-	//TODO maybe create render ui function
 	//renders score
 	score := "length: " + strconv.Itoa(len(gameState.Snake))
-	rl.DrawText(score, 15, 15, rectangleSize/3, rl.White)
+	rl.DrawText(score, 15, 15, rectangleSize/2, rl.White)
 
 	rl.EndDrawing()
 }
