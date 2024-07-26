@@ -19,7 +19,6 @@ const (
 )
 
 func renderSnake() {
-	//TODO fix bracket, typecasting and general math hell in this file
 	//TODO make tail smooth
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
@@ -100,14 +99,14 @@ func checkNeighbors(n int) int {
 
 func tubeHeadVertical(x int32, y int32) {
 	if lastDirection == game.Down {
-		rl.DrawRectangle((x*rectangleSize + rectangleSize*3/10), y*rectangleSize, rectangleSize*2/5, rectangleSize/2, rl.Black)
+		rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize/2, rl.Black)
 		//eyes
-		rl.DrawRectangle((x*rectangleSize + rectangleSize*3/10), y*rectangleSize, rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle(x*rectangleSize+rectangleSize*6/10, y*rectangleSize, rectangleSize/10, rectangleSize/10, rl.White)
 	} else {
-		rl.DrawRectangle((x*rectangleSize + rectangleSize*3/10), y*rectangleSize+(rectangleSize/2), rectangleSize*2/5, rectangleSize/2, rl.Black)
+		rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize/2, rectangleSize*2/5, rectangleSize/2, rl.Black)
 		//eyes
-		rl.DrawRectangle((x*rectangleSize + rectangleSize*3/10), y*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
+		rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle(x*rectangleSize+rectangleSize*6/10, y*rectangleSize+rectangleSize*9/10, rectangleSize/10, rectangleSize/10, rl.White)
 	}
 }
@@ -119,7 +118,7 @@ func tubeHeadHorizontal(x int32, y int32) {
 		rl.DrawRectangle(x*rectangleSize, y*rectangleSize+rectangleSize*3/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle(x*rectangleSize, y*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
 	} else {
-		rl.DrawRectangle(x*rectangleSize+(rectangleSize/2), y*rectangleSize+rectangleSize*3/10, rectangleSize/2, rectangleSize*2/5, rl.Black)
+		rl.DrawRectangle(x*rectangleSize+rectangleSize/2, y*rectangleSize+rectangleSize*3/10, rectangleSize/2, rectangleSize*2/5, rl.Black)
 		//eyes
 		rl.DrawRectangle(x*rectangleSize+rectangleSize*9/10, y*rectangleSize+rectangleSize*3/10, rectangleSize/10, rectangleSize/10, rl.White)
 		rl.DrawRectangle(x*rectangleSize+rectangleSize*9/10, y*rectangleSize+rectangleSize*6/10, rectangleSize/10, rectangleSize/10, rl.White)
@@ -127,37 +126,37 @@ func tubeHeadHorizontal(x int32, y int32) {
 }
 
 func tubeVertical(x int32, y int32) {
-	rl.DrawRectangle((x*rectangleSize + int32(int(rectangleSize)*3/10)), y*rectangleSize, int32(int(rectangleSize)*2/5), rectangleSize, rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize, rl.Black)
 }
 
 func tubeHorizontal(x int32, y int32) {
-	rl.DrawRectangle((x * rectangleSize), y*rectangleSize+int32(int(rectangleSize)*3/10), rectangleSize, int32(int(rectangleSize)*2/5), rl.Black)
+	rl.DrawRectangle(x*rectangleSize, y*rectangleSize+rectangleSize*3/10, rectangleSize, rectangleSize*2/5, rl.Black)
 }
 
 func cornerLeftTop(x int32, y int32) {
 	// leftCenter
-	rl.DrawRectangle(x*rectangleSize, y*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	rl.DrawRectangle(x*rectangleSize, y*rectangleSize+rectangleSize*3/10, rectangleSize*7/10, rectangleSize*2/5, rl.Black)
 	// topCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize)*3/10), y*rectangleSize, int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize*7/10, rl.Black)
 }
 
 func cornerLeftDown(x int32, y int32) {
 	// leftCenter
-	rl.DrawRectangle(x*rectangleSize, y*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	rl.DrawRectangle(x*rectangleSize, y*rectangleSize+rectangleSize*3/10, rectangleSize*7/10, rectangleSize*2/5, rl.Black)
 	// downCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize)*3/10), y*rectangleSize+int32(int(rectangleSize*3/10)), int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize*3/10, rectangleSize*2/5, rectangleSize*7/10, rl.Black)
 }
 
 func cornerRightTop(x int32, y int32) {
 	// topCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize)*3/10), y*rectangleSize, int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize*7/10, rl.Black)
 	// rightCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize*3/10)), y*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize*3/10, rectangleSize*7/10, rectangleSize*2/5, rl.Black)
 }
 
 func cornerRightDown(x int32, y int32) {
 	// rightCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize*3/10)), y*rectangleSize+int32(int(rectangleSize)*3/10), int32(int(rectangleSize)*7/10), int32(int(rectangleSize)*2/5), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize*3/10, rectangleSize*7/10, rectangleSize*2/5, rl.Black)
 	// downCenter
-	rl.DrawRectangle(x*rectangleSize+int32(int(rectangleSize)*3/10), y*rectangleSize+int32(int(rectangleSize*3/10)), int32(int(rectangleSize)*2/5), int32(int(rectangleSize)*7/10), rl.Black)
+	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize+rectangleSize*3/10, rectangleSize*2/5, rectangleSize*7/10, rl.Black)
 }
