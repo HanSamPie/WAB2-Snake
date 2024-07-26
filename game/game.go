@@ -16,25 +16,22 @@ type cell int
 type position struct {
 	X, Y int
 }
-type direction struct {
-	X, Y int
-}
+type Direction position
 type GameState struct {
-	CurrentDirection direction
+	CurrentDirection Direction
 	Snake            []position
 	Grid             [][]cell
-	debug            bool
+	Columns          int
+	Rows             int
+	Debug            bool
 }
 
 var (
-	Up       = direction{X: 0, Y: -1}
-	Down     = direction{X: 0, Y: 1}
-	Right    = direction{X: 1, Y: 0}
-	Left     = direction{X: -1, Y: 0}
-	GameOver = direction{X: 0, Y: 0}
-
-	Columns int
-	Rows    int
+	Up       = Direction{X: 0, Y: -1}
+	Down     = Direction{X: 0, Y: 1}
+	Right    = Direction{X: 1, Y: 0}
+	Left     = Direction{X: -1, Y: 0}
+	GameOver = Direction{X: 0, Y: 0}
 
 	gameState *GameState
 )
@@ -42,19 +39,19 @@ var (
 func InitGame(columns int, rows int, debug bool) *GameState {
 	var state GameState
 	gameState = &state
-	state.debug = debug
+	state.Debug = debug
 	state.CurrentDirection = Right
-	Columns = columns
-	Rows = rows
+	state.Columns = columns
+	state.Rows = rows
 
-	state.Grid = make([][]cell, Rows)
+	state.Grid = make([][]cell, state.Rows)
 	for i := range state.Grid {
-		state.Grid[i] = make([]cell, Columns)
+		state.Grid[i] = make([]cell, state.Columns)
 	}
-	initialPosition := position{X: Rows / 3, Y: Columns / 2}
+	initialPosition := position{X: state.Rows / 3, Y: state.Columns / 2}
 	state.Snake = append(state.Snake, initialPosition)
 	state.Grid[state.Snake[0].Y][state.Snake[0].X] = SNAKE
-	state.Grid[Rows/2][2*Columns/3] = FOOD
+	state.Grid[state.Rows/2][2*state.Columns/3] = FOOD
 
 	if debug {
 		test()
@@ -65,8 +62,8 @@ func InitGame(columns int, rows int, debug bool) *GameState {
 
 func placeFood() {
 	for {
-		x := rand.Intn(Columns)
-		y := rand.Intn(Rows)
+		x := rand.Intn(gameState.Columns)
+		y := rand.Intn(gameState.Rows)
 		if gameState.Grid[y][x] == EMPTY {
 			gameState.Grid[y][x] = FOOD
 			break
@@ -82,17 +79,19 @@ func MoveSnake() {
 	}
 
 	//check collision
-	if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
+	if newHead.X >= gameState.Columns || newHead.Y >= gameState.Rows {
 		//handle Game Over
 		gameState.CurrentDirection = GameOver
+		return
 	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
 		gameState.CurrentDirection = GameOver
-	} else if newHead.X >= Columns || newHead.Y >= Rows {
+		return
+	} else if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
 		//handle game over
 		gameState.CurrentDirection = GameOver
+		return
 	}
-
 	//check food eaten
 	if gameState.Grid[newHead.Y][newHead.X] == FOOD {
 		placeFood()
@@ -112,10 +111,11 @@ func MoveSnake() {
 		//update grid
 		gameState.Grid[tail.Y][tail.X] = EMPTY
 	}
-	for _, part := range gameState.Snake {
-		gameState.Grid[part.Y][part.X] = SNAKE
-	}
-	if gameState.debug {
+
+	//add newHead to grid
+	gameState.Grid[newHead.Y][newHead.X] = SNAKE
+
+	if gameState.Debug {
 		test()
 	}
 }
@@ -142,8 +142,8 @@ func printDirection() {
 }
 
 func printGrid() {
-	for i := 0; i < Rows; i++ {
-		for j := 0; j < Columns; j++ {
+	for i := 0; i < gameState.Rows; i++ {
+		for j := 0; j < gameState.Columns; j++ {
 			print(gameState.Grid[i][j])
 		}
 		print("\n")
