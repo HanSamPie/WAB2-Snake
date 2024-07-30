@@ -5,7 +5,7 @@
   "end_time": "timestamp",
   "final_length": "integer",
   "time_to_length": [
-    {"length": "integer", "time": "timestamp"}
+    {"length": "integer", "time_since": "time"}
   ],
   "success_chance": [
     {
@@ -13,10 +13,10 @@
       "reached": "boolean"
     }
   ],
-  "mean_time_to_fruit": [
-    {"fruit_number": "integer", "time": "timestamp"}
+  "time_to_fruit": [
+    {"fruit_number": "integer", "time_since": "time"}
   ],
-  "total_mean_time_to_fruit": "timestamp",
+  "mean_time_to_fruit": "time",
   "direction_changes": [
     {"direction": "string","timestamp": "timestamp"}
   ],
@@ -31,7 +31,6 @@
   ],
   "game_over": {
     "cause": "string",
-    "position": {"x": "integer", "y": "integer"},
-    "time": "timestamp"
+    "position": {"x": "integer", "y": "integer"}
   }
 }

@@ -5,20 +5,20 @@ import (
 )
 
 type Metrics struct {
-	SessionID            string            `json:"session_id"`
-	PlayerID             string            `json:"player_id"`
-	StartTime            time.Time         `json:"start_time"`
-	EndTime              time.Time         `json:"end_time"`
-	FinalLength          int               `json:"final_length"`
-	TimeToLength         []LengthTime      `json:"time_to_length"`
-	SuccessChance        []SuccessChance   `json:"success_chance"`
-	MeanTimeToFruit      []FruitTime       `json:"mean_time_to_fruit"`
-	TotalMeanTimeToFruit time.Duration     `json:"total_mean_time_to_fruit"`
-	DirectionChanges     []DirectionChange `json:"direction_changes"`
-	InputsToFruit        []InputsToFruit   `json:"inputs_to_fruit"`
-	PathFitness          []PathFitness     `json:"path_fitness"`
-	Heatmap              []Heatmap         `json:"heatmap"`
-	GameOver             GameOver          `json:"game_over"`
+	SessionID        string            `json:"session_id"`
+	PlayerID         string            `json:"player_id"`
+	StartTime        time.Time         `json:"start_time"`
+	EndTime          time.Time         `json:"end_time"`
+	FinalLength      int               `json:"final_length"`
+	TimeToLength     []LengthTime      `json:"time_to_length"`
+	SuccessChance    []SuccessChance   `json:"success_chance"`
+	TimeToFruit      []FruitTime       `json:"time_to_fruit"`
+	MeanTimeToFruit  time.Duration     `json:"mean_time_to_fruit"`
+	DirectionChanges []DirectionChange `json:"direction_changes"`
+	InputsToFruit    []InputsToFruit   `json:"inputs_to_fruit"`
+	PathFitness      []PathFitness     `json:"path_fitness"`
+	Heatmap          []Heatmap         `json:"heatmap"`
+	GameOver         GameOver          `json:"game_over"`
 }
 
 type LengthTime struct {
@@ -76,6 +76,6 @@ func (g *Game) setGameOver(gameOver string) {
 			Y int "json:\"y\""
 		}(g.Snake[0]),
 	}
-	g.Metrics.TotalMeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
+	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
 	g.test()
 }
