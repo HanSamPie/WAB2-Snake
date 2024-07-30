@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"time"
 
 	"math/rand"
 )
@@ -14,8 +15,7 @@ const (
 
 type cell int
 type position struct {
-	X int `json:"x"`
-	Y int `json:"y"`
+	X, Y int
 }
 type Direction position
 type Game struct {
@@ -37,11 +37,12 @@ var (
 )
 
 func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
+	//Initialize Game
 	g.Debug = debug
 	g.CurrentDirection = Right
 	g.Columns = columns
 	g.Rows = rows
-
+	//Initialize grid with Snake & Food
 	g.Grid = make([][]cell, g.Rows)
 	for i := range g.Grid {
 		g.Grid[i] = make([]cell, g.Columns)
@@ -52,7 +53,11 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Grid[g.Rows/2][2*g.Columns/3] = FOOD
 
 	//Initialize Metrics
+	g.Metrics.SessionID = "asdf"
+	g.Metrics.PlayerID = "Hans"
+	g.Metrics.StartTime = time.Now()
 
+	//Debug
 	if g.Debug {
 		g.test()
 	}
@@ -81,19 +86,23 @@ func (g *Game) MoveSnake() {
 	//check collision
 	if newHead.X >= g.Columns || newHead.Y >= g.Rows {
 		//handle Game Over
+		g.setGameOver("border")
 		g.CurrentDirection = Stop
 		return
 	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
+		g.setGameOver("border")
 		g.CurrentDirection = Stop
 		return
 	} else if g.Grid[newHead.Y][newHead.X] == SNAKE {
 		//handle game over
+		g.setGameOver("tail")
 		g.CurrentDirection = Stop
 		return
 	}
 	//check food eaten
 	if g.Grid[newHead.Y][newHead.X] == FOOD {
+
 		g.placeFood()
 		g.Grid[newHead.Y][newHead.X] = SNAKE
 
@@ -104,7 +113,7 @@ func (g *Game) MoveSnake() {
 		//remove tail
 		tail := g.Snake[len(g.Snake)-1]
 		g.Snake = g.Snake[:len(g.Snake)-1]
-		//add head
+		//add newHead
 		newSnake := append([]position{newHead}, g.Snake...)
 		g.Snake = newSnake
 
@@ -121,9 +130,11 @@ func (g *Game) MoveSnake() {
 }
 
 func (g *Game) test() {
-	g.printDirection()
+	/*g.printDirection()
 	fmt.Println(g.Snake)
-	g.printGrid()
+	g.printGrid()*/
+
+	fmt.Println(g.Metrics)
 }
 
 func (g *Game) printDirection() {

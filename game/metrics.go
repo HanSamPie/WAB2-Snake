@@ -22,8 +22,8 @@ type Metrics struct {
 }
 
 type LengthTime struct {
-	Length int       `json:"length"`
-	Time   time.Time `json:"time"`
+	Length    int       `json:"length"`
+	TimeSince time.Time `json:"time_since"`
 }
 
 type SuccessChance struct {
@@ -33,7 +33,7 @@ type SuccessChance struct {
 
 type FruitTime struct {
 	FruitNumber int       `json:"fruit_number"`
-	Time        time.Time `json:"time"`
+	TimeSince   time.Time `json:"time_since"`
 }
 
 type DirectionChange struct {
@@ -64,5 +64,18 @@ type GameOver struct {
 		X int `json:"x"`
 		Y int `json:"y"`
 	} `json:"position"`
-	Time time.Time `json:"time"`
+}
+
+func (g *Game) setGameOver(gameOver string) {
+	g.Metrics.EndTime = time.Now()
+	g.Metrics.FinalLength = len(g.Snake)
+	g.Metrics.GameOver = GameOver{
+		Cause: gameOver,
+		Position: struct {
+			X int "json:\"x\""
+			Y int "json:\"y\""
+		}(g.Snake[0]),
+	}
+	g.Metrics.TotalMeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
+	g.test()
 }
