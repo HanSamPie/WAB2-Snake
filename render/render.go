@@ -88,8 +88,8 @@ func update() {
 
 }
 
-func Main(game *game.Game) {
-	gameState = game
+func Main(state *game.Game) {
+	gameState = state
 
 	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
 	screenHeight = 2*rectangleSize + (int32(gameState.Rows) * rectangleSize)
@@ -101,7 +101,10 @@ func Main(game *game.Game) {
 	rl.SetTargetFPS(int32(FPS))
 
 	for running {
-		input()
+		//or check for Stop on each move
+		if gameState.CurrentDirection != game.Stop {
+			input()
+		}
 		update()
 		render()
 	}
