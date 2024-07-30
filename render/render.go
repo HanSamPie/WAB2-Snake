@@ -2,6 +2,7 @@ package render
 
 import (
 	"fmt"
+	"image/color"
 	"projects/game"
 	"strconv"
 
@@ -41,13 +42,15 @@ func renderBoard() {
 	//renders checkered board
 	for rows := 0; rows < gameState.Rows; rows++ {
 		for columns := 0; columns < gameState.Columns; columns++ {
+			var color color.RGBA
 			if gameState.Grid[rows][columns] == game.FOOD {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
+				color = rl.Red
 			} else if (rows+columns)%2 == 0 {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
+				color = rl.Green
 			} else {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Lime)
+				color = rl.Lime
 			}
+			rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, color)
 		}
 	}
 }
@@ -57,7 +60,6 @@ func render() {
 
 	//TODO implement game over screen
 	renderBoard()
-
 	renderSnake()
 
 	//renders score
@@ -70,11 +72,11 @@ func render() {
 func update() {
 	running = !rl.WindowShouldClose()
 	frameCount++
-	if frameCount == FPS/6 && gameState.CurrentDirection != game.GameOver {
+	if frameCount == FPS/6 && gameState.CurrentDirection != game.Stop {
 		game.MoveSnake()
 
 		frameCount = 0
-		if gameState.CurrentDirection != game.GameOver {
+		if gameState.CurrentDirection != game.Stop {
 			lastDirection = gameState.CurrentDirection
 		}
 
@@ -89,9 +91,9 @@ func update() {
 func Main(state *game.GameState) {
 	gameState = state
 
-	screenWidth = 100 + (int32(gameState.Columns) * rectangleSize)
-	screenHeight = 100 + (int32(gameState.Rows) * rectangleSize)
-	rl.InitWindow(screenWidth, screenHeight, "Hello there")
+	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
+	screenHeight = 2*rectangleSize + (int32(gameState.Rows) * rectangleSize)
+	rl.InitWindow(screenWidth, screenHeight, "Snake")
 	defer rl.CloseWindow()
 
 	//rl.SetExitKey(0)
