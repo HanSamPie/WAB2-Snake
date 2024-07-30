@@ -16,9 +16,11 @@ var (
 	frameCount    int   = 0
 	screenWidth   int32
 	screenHeight  int32
-	gameState     *game.GameState
 	lastDirection = game.Right
 )
+
+type renderer struct {
+}
 
 func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
@@ -88,7 +90,7 @@ func update() {
 
 }
 
-func Main(state *game.GameState) {
+func Renderer() {
 	gameState = state
 
 	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
