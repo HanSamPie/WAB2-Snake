@@ -11,8 +11,6 @@ type Metrics struct {
 	EndTime          time.Time         `json:"end_time"`
 	FinalLength      int               `json:"final_length"`
 	TimeToLength     []LengthTime      `json:"time_to_length"`
-	SuccessChance    []SuccessChance   `json:"success_chance"`
-	TimeToFruit      []FruitTime       `json:"time_to_fruit"`
 	MeanTimeToFruit  time.Duration     `json:"mean_time_to_fruit"`
 	DirectionChanges []DirectionChange `json:"direction_changes"`
 	InputsToFruit    []InputsToFruit   `json:"inputs_to_fruit"`
@@ -22,18 +20,8 @@ type Metrics struct {
 }
 
 type LengthTime struct {
-	Length    int       `json:"length"`
-	TimeSince time.Time `json:"time_since"`
-}
-
-type SuccessChance struct {
-	LengthTarget int  `json:"length_target"`
-	Reached      bool `json:"reached"`
-}
-
-type FruitTime struct {
-	FruitNumber int       `json:"fruit_number"`
-	TimeSince   time.Time `json:"time_since"`
+	Length    int           `json:"length"`
+	TimeSince time.Duration `json:"time_since"`
 }
 
 type DirectionChange struct {

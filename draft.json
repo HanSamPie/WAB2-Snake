@@ -7,15 +7,6 @@
   "time_to_length": [
     {"length": "integer", "time_since": "time"}
   ],
-  "success_chance": [
-    {
-      "length_target": "integer",
-      "reached": "boolean"
-    }
-  ],
-  "time_to_fruit": [
-    {"fruit_number": "integer", "time_since": "time"}
-  ],
   "mean_time_to_fruit": "time",
   "direction_changes": [
     {"direction": "string","timestamp": "timestamp"}
