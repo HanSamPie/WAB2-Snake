@@ -40,7 +40,7 @@ func renderSnake() {
 			cornerRightTop(x, y)
 		} else if neighbor == rightDown {
 			cornerRightDown(x, y)
-		} else if neighbor == -1 && gameState.CurrentDirection != game.GameOver {
+		} else if neighbor == -1 && gameState.CurrentDirection != game.Stop {
 			log.Fatal("render snake neighbor -1; or in other words I fucked up")
 		}
 	}

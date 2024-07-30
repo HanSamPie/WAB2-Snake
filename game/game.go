@@ -14,7 +14,8 @@ const (
 
 type cell int
 type position struct {
-	X, Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 type Direction position
 type GameState struct {
@@ -24,14 +25,15 @@ type GameState struct {
 	Columns          int
 	Rows             int
 	Debug            bool
+	Metrics          Metrics
 }
 
 var (
-	Up       = Direction{X: 0, Y: -1}
-	Down     = Direction{X: 0, Y: 1}
-	Right    = Direction{X: 1, Y: 0}
-	Left     = Direction{X: -1, Y: 0}
-	GameOver = Direction{X: 0, Y: 0}
+	Up    = Direction{X: 0, Y: -1}
+	Down  = Direction{X: 0, Y: 1}
+	Right = Direction{X: 1, Y: 0}
+	Left  = Direction{X: -1, Y: 0}
+	Stop  = Direction{X: 0, Y: 0}
 
 	gameState *GameState
 )
@@ -52,6 +54,8 @@ func InitGame(columns int, rows int, debug bool) *GameState {
 	state.Snake = append(state.Snake, initialPosition)
 	state.Grid[state.Snake[0].Y][state.Snake[0].X] = SNAKE
 	state.Grid[state.Rows/2][2*state.Columns/3] = FOOD
+
+	//Initialize Metrics
 
 	if debug {
 		test()
@@ -81,15 +85,15 @@ func MoveSnake() {
 	//check collision
 	if newHead.X >= gameState.Columns || newHead.Y >= gameState.Rows {
 		//handle Game Over
-		gameState.CurrentDirection = GameOver
+		gameState.CurrentDirection = Stop
 		return
 	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
-		gameState.CurrentDirection = GameOver
+		gameState.CurrentDirection = Stop
 		return
 	} else if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
 		//handle game over
-		gameState.CurrentDirection = GameOver
+		gameState.CurrentDirection = Stop
 		return
 	}
 	//check food eaten
