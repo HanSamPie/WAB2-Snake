@@ -17,10 +17,8 @@ var (
 	screenWidth   int32
 	screenHeight  int32
 	lastDirection = game.Right
+	gameState     *game.Game
 )
-
-type renderer struct {
-}
 
 func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
@@ -75,7 +73,7 @@ func update() {
 	running = !rl.WindowShouldClose()
 	frameCount++
 	if frameCount == FPS/6 && gameState.CurrentDirection != game.Stop {
-		game.MoveSnake()
+		gameState.MoveSnake()
 
 		frameCount = 0
 		if gameState.CurrentDirection != game.Stop {
@@ -90,8 +88,8 @@ func update() {
 
 }
 
-func Renderer() {
-	gameState = state
+func Main(game *game.Game) {
+	gameState = game
 
 	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
 	screenHeight = 2*rectangleSize + (int32(gameState.Rows) * rectangleSize)
