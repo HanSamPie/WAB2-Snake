@@ -56,12 +56,12 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Metrics.SessionID = "asdf"
 	g.Metrics.PlayerID = "Hans"
 	g.Metrics.StartTime = time.Now()
-	g.Metrics.TimeToLength = make([]LengthTime, columns*rows)
 	//TODO at GameOver remove empty values?
-	g.Metrics.TimeToLength[0] = LengthTime{
+	g.Metrics.TimeToLength = []LengthTime{{
 		Length:    1,
 		TimeSince: 0,
-	}
+	}}
+	g.Metrics.DirectionChanges = make([]DirectionChange, 0)
 
 	//Debug
 	if g.Debug {
@@ -80,6 +80,7 @@ func (g *Game) placeFood() {
 			break
 		}
 	}
+	g.timeToLength()
 }
 
 func (g *Game) MoveSnake() {
@@ -88,6 +89,8 @@ func (g *Game) MoveSnake() {
 		X: (g.Snake[0].X + g.CurrentDirection.X),
 		Y: (g.Snake[0].Y + g.CurrentDirection.Y),
 	}
+
+	//TODO Bug: if newHead hits last part game over but should not cause game over
 
 	//check collision
 	if newHead.X >= g.Columns || newHead.Y >= g.Rows {

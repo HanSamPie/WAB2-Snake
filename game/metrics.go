@@ -67,3 +67,15 @@ func (g *Game) setGameOver(gameOver string) {
 	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
 	g.test()
 }
+
+func (g *Game) timeToLength() {
+	var passedTime time.Duration
+	for _, time := range g.Metrics.TimeToLength {
+		passedTime += time.TimeSince
+	}
+	data := LengthTime{
+		Length:    len(g.Snake),
+		TimeSince: time.Since(g.Metrics.StartTime) - passedTime,
+	}
+	g.Metrics.TimeToLength = append(g.Metrics.TimeToLength, data)
+}

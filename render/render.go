@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"projects/game"
 	"strconv"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -24,6 +25,11 @@ func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
 		//change direction to up
 		gameState.CurrentDirection = game.Up
+		data := game.DirectionChange{
+			Direction: "up",
+			Timestamp: time.Now(),
+		}
+		gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
 	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && lastDirection.X != 1 {
 		//change direction to left
 		gameState.CurrentDirection = game.Left
