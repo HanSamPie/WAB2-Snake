@@ -1,7 +1,9 @@
 package game
 
 import (
+	"encoding/json"
 	"image/color"
+	"os"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -71,6 +73,8 @@ func (g *Game) setGameOver(gameOver string) {
 	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
 	//TODO remember to delete this before running it on server since I don't want to send a png in addition to the json
 	g.generateHeatmap()
+
+	g.saveGameData()
 
 	if g.Debug {
 		g.test()
@@ -162,4 +166,9 @@ func (g *Game) generateHeatmap() {
 	}
 
 	dc.SavePNG("heatmap.png")
+}
+
+func (g *Game) saveGameData() {
+	file, _ := json.MarshalIndent(g.Metrics, "", "  ")
+	_ = os.WriteFile("game_data.json", file, 0644)
 }
