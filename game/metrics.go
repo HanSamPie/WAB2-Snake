@@ -66,6 +66,7 @@ func (g *Game) setGameOver(gameOver string) {
 		}(g.Snake[0]),
 	}
 	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
+
 	g.test()
 }
 
@@ -90,8 +91,6 @@ func (g *Game) inputsToFruit() {
 	NumberInputsToFruit = 0
 }
 
-// TODO first ratio = inf+
-// TODO ratio can be below zero {4 11 12 0.9166667}
 func (g *Game) pathFitness(x int, y int) {
 	data := PathFitness{
 		FruitNumber: len(g.Snake),
@@ -102,10 +101,10 @@ func (g *Game) pathFitness(x int, y int) {
 	g.Metrics.PathFitness = append(g.Metrics.PathFitness, data)
 	//reset pathLength and set new Optimal path
 	pathLength = 0
-	optimalPath = calcOPtimalPath(g.Snake[0].X, x, g.Snake[0].Y, y)
+	optimalPath = calcOptimalPath(g.Snake[0].X, x, g.Snake[0].Y, y)
 }
 
-func calcOPtimalPath(x1, x2, y1, y2 int) int {
+func calcOptimalPath(x1, x2, y1, y2 int) int {
 	//apparently go has no abs function for int
 	//and I consider this better than type conversion to float
 	difX := x1 - x2
@@ -119,4 +118,22 @@ func calcOPtimalPath(x1, x2, y1, y2 int) int {
 	dif := difX + difY
 
 	return dif
+}
+
+func (g *Game) heatmap(newHead position) {
+	// Check if position is already in heatmap
+	for i, h := range g.Metrics.Heatmap {
+		if h.X == newHead.X && h.Y == newHead.Y {
+			g.Metrics.Heatmap[i].Visits++
+			return
+		}
+	}
+	// If not, add new position
+	data := Heatmap{
+		X:      newHead.X,
+		Y:      newHead.Y,
+		Visits: 1,
+	}
+	g.Metrics.Heatmap = append(g.Metrics.Heatmap, data)
+
 }

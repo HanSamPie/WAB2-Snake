@@ -74,8 +74,16 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	}}
 	g.Metrics.DirectionChanges = make([]DirectionChange, 0)
 	//setting initial Optimal Path
-	optimalPath = calcOPtimalPath(g.Snake[0].X, g.Columns/2, g.Snake[0].Y, 2*g.Rows/3)
+	optimalPath = calcOptimalPath(g.Snake[0].X, g.Columns/2, g.Snake[0].Y, 2*g.Rows/3)
 	fmt.Println(g.Snake[0].X, g.Columns/3, g.Snake[0].Y, g.Rows/2, optimalPath)
+
+	//setting initial value of heatmap
+	data := Heatmap{
+		X:      g.Snake[0].X,
+		Y:      g.Snake[0].Y,
+		Visits: 1,
+	}
+	g.Metrics.Heatmap = append(g.Metrics.Heatmap, data)
 
 	//Debug
 	if g.Debug {
@@ -156,6 +164,9 @@ func (g *Game) MoveSnake() {
 
 	//add newHead to grid
 	g.Grid[newHead.Y][newHead.X] = SNAKE
+
+	//update Heatmap
+	g.heatmap(newHead)
 
 	if g.Debug {
 		g.test()
