@@ -174,11 +174,13 @@ func (g *Game) MoveSnake() {
 }
 
 func (g *Game) test() {
-	/*g.printDirection()
+	g.printDirection()
 	fmt.Println(g.Snake)
-	g.printGrid()*/
+	g.printGrid()
 
-	fmt.Println(g.Metrics)
+	if g.Metrics.FinalLength != 0 {
+		fmt.Println(g.Metrics)
+	}
 }
 
 func (g *Game) printDirection() {

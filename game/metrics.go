@@ -72,7 +72,9 @@ func (g *Game) setGameOver(gameOver string) {
 	//TODO remember to delete this before running it on server since I don't want to send a png in addition to the json
 	g.generateHeatmap()
 
-	g.test()
+	if g.Debug {
+		g.test()
+	}
 }
 
 func (g *Game) timeToLength() {
