@@ -35,9 +35,10 @@ type InputsToFruit struct {
 }
 
 type PathFitness struct {
-	FruitNumber int `json:"fruit_number"`
-	ActualPath  int `json:"actual_path"`
-	OptimalPath int `json:"optimal_path"`
+	FruitNumber int     `json:"fruit_number"`
+	ActualPath  int     `json:"actual_path"`
+	OptimalPath int     `json:"optimal_path"`
+	PathRatio   float32 `json:"path_ratio"`
 }
 
 type Heatmap struct {
@@ -78,4 +79,44 @@ func (g *Game) timeToLength() {
 		TimeSince: time.Since(g.Metrics.StartTime) - passedTime,
 	}
 	g.Metrics.TimeToLength = append(g.Metrics.TimeToLength, data)
+}
+
+func (g *Game) inputsToFruit() {
+	data := InputsToFruit{
+		FruitNumber: len(g.Snake),
+		Inputs:      NumberInputsToFruit,
+	}
+	g.Metrics.InputsToFruit = append(g.Metrics.InputsToFruit, data)
+	NumberInputsToFruit = 0
+}
+
+// TODO first ratio = inf+
+// TODO ratio can be below zero {4 11 12 0.9166667}
+func (g *Game) pathFitness(x int, y int) {
+	data := PathFitness{
+		FruitNumber: len(g.Snake),
+		ActualPath:  pathLength,
+		OptimalPath: optimalPath,
+		PathRatio:   float32(pathLength) / float32(optimalPath),
+	}
+	g.Metrics.PathFitness = append(g.Metrics.PathFitness, data)
+	//reset pathLength and set new Optimal path
+	pathLength = 0
+	optimalPath = calcOPtimalPath(g.Snake[0].X, x, g.Snake[0].Y, y)
+}
+
+func calcOPtimalPath(x1, x2, y1, y2 int) int {
+	//apparently go has no abs function for int
+	//and I consider this better than type conversion to float
+	difX := x1 - x2
+	difY := y1 - y2
+	if difX < 0 {
+		difX = -difX
+	}
+	if difY < 0 {
+		difY = -difY
+	}
+	dif := difX + difY
+
+	return dif
 }

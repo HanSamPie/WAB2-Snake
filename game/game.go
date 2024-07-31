@@ -36,6 +36,8 @@ var (
 	Stop  = Direction{X: 0, Y: 0}
 
 	NumberInputsToFruit = 0
+	pathLength          = 0
+	optimalPath         = 0
 )
 
 var DirectionMap = map[Direction]string{
@@ -60,7 +62,7 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Snake = append(g.Snake, initialPosition)
 	//update Grid
 	g.Grid[g.Snake[0].Y][g.Snake[0].X] = SNAKE
-	g.Grid[g.Rows/2][2*g.Columns/3] = FOOD
+	g.Grid[g.Columns/2][2*g.Rows/3] = FOOD
 
 	//Initialize Metrics
 	g.Metrics.SessionID = "asdf"
@@ -71,6 +73,9 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 		TimeSince: 0,
 	}}
 	g.Metrics.DirectionChanges = make([]DirectionChange, 0)
+	//setting initial Optimal Path
+	optimalPath = calcOPtimalPath(g.Snake[0].X, g.Columns/2, g.Snake[0].Y, 2*g.Rows/3)
+	fmt.Println(g.Snake[0].X, g.Columns/3, g.Snake[0].Y, g.Rows/2, optimalPath)
 
 	//Debug
 	if g.Debug {
@@ -80,10 +85,11 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	return g
 }
 
-func (g *Game) placeFood() {
+func (g *Game) placeFood() (int, int) {
+	var x, y int
 	for {
-		x := rand.Intn(g.Columns)
-		y := rand.Intn(g.Rows)
+		x = rand.Intn(g.Columns)
+		y = rand.Intn(g.Rows)
 		if g.Grid[y][x] == EMPTY {
 			g.Grid[y][x] = FOOD
 			break
@@ -92,14 +98,8 @@ func (g *Game) placeFood() {
 	//add element to timeToLength
 	g.timeToLength()
 	//add element to InputsToFruit
-	data := InputsToFruit{
-		FruitNumber: len(g.Snake),
-		Inputs:      NumberInputsToFruit,
-	}
-	g.Metrics.InputsToFruit = append(g.Metrics.InputsToFruit, data)
-	NumberInputsToFruit = 0
-
-	g.pathFitness()
+	g.inputsToFruit()
+	return x, y
 }
 
 func (g *Game) MoveSnake() {
@@ -126,15 +126,22 @@ func (g *Game) MoveSnake() {
 		g.CurrentDirection = Stop
 		return
 	}
+
+	//increase pathLength
+	pathLength++
+
 	//check food eaten
 	if g.Grid[newHead.Y][newHead.X] == FOOD {
 
-		g.placeFood()
+		x, y := g.placeFood()
 		g.Grid[newHead.Y][newHead.X] = SNAKE
 
 		//add head
 		newSnake := append([]position{newHead}, g.Snake...)
 		g.Snake = newSnake
+
+		//add element to pathFitness
+		g.pathFitness(x, y)
 	} else {
 		//remove tail
 		tail := g.Snake[len(g.Snake)-1]
