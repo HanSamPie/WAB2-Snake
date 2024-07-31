@@ -16,7 +16,7 @@ type Metrics struct {
 	EndTime          time.Time         `json:"end_time"`
 	FinalLength      int               `json:"final_length"`
 	TimeToLength     []LengthTime      `json:"time_to_length"`
-	MeanTimeToFruit  time.Duration     `json:"mean_time_to_fruit"`
+	MeanTimeToFruit  float64           `json:"mean_time_to_fruit"`
 	DirectionChanges []DirectionChange `json:"direction_changes"`
 	InputsToFruit    []InputsToFruit   `json:"inputs_to_fruit"`
 	PathFitness      []PathFitness     `json:"path_fitness"`
@@ -25,8 +25,8 @@ type Metrics struct {
 }
 
 type LengthTime struct {
-	Length    int           `json:"length"`
-	TimeSince time.Duration `json:"time_since"`
+	Length    int     `json:"length"`
+	TimeSince float64 `json:"time_since"`
 }
 
 type DirectionChange struct {
@@ -70,7 +70,11 @@ func (g *Game) setGameOver(gameOver string) {
 			Y int "json:\"y\""
 		}(g.Snake[0]),
 	}
-	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
+
+	//TODO fix MeanTime
+	duration := g.Metrics.EndTime.Sub(g.Metrics.StartTime)
+	meanTimeToFruit := duration / time.Duration(g.Metrics.FinalLength-1) //length - 1 since you start with len = 1
+	g.Metrics.MeanTimeToFruit = meanTimeToFruit.Seconds()
 	//TODO remember to delete this before running it on server since I don't want to send a png in addition to the json
 	g.generateHeatmap()
 
@@ -83,12 +87,12 @@ func (g *Game) setGameOver(gameOver string) {
 
 func (g *Game) timeToLength() {
 	var passedTime time.Duration
-	for _, time := range g.Metrics.TimeToLength {
-		passedTime += time.TimeSince
+	for _, data := range g.Metrics.TimeToLength {
+		passedTime += time.Duration(data.TimeSince * float64(time.Second))
 	}
 	data := LengthTime{
 		Length:    len(g.Snake),
-		TimeSince: time.Since(g.Metrics.StartTime) - passedTime,
+		TimeSince: time.Duration.Seconds(time.Since(g.Metrics.StartTime) - passedTime),
 	}
 	g.Metrics.TimeToLength = append(g.Metrics.TimeToLength, data)
 }

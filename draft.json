@@ -15,7 +15,7 @@
     {"fruit_number": "integer", "inputs": "integer"}
   ],
   "path_fitness": [
-    {"fruit_number": "integer", "actual_path": "integer", "optimal_path": "integer"}
+    {"fruit_number": "integer", "actual_path": "integer", "optimal_path": "integer", "path_ratio": "float"}
   ],
   "heatmap": [
     {"x": "integer", "y": "integer", "visits": "integer"}
