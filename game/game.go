@@ -34,6 +34,8 @@ var (
 	Right = Direction{X: 1, Y: 0}
 	Left  = Direction{X: -1, Y: 0}
 	Stop  = Direction{X: 0, Y: 0}
+
+	NumberInputsToFruit = 0
 )
 
 var DirectionMap = map[Direction]string{
@@ -56,6 +58,7 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	}
 	initialPosition := position{X: g.Rows / 3, Y: g.Columns / 2}
 	g.Snake = append(g.Snake, initialPosition)
+	//update Grid
 	g.Grid[g.Snake[0].Y][g.Snake[0].X] = SNAKE
 	g.Grid[g.Rows/2][2*g.Columns/3] = FOOD
 
@@ -86,7 +89,17 @@ func (g *Game) placeFood() {
 			break
 		}
 	}
+	//add element to timeToLength
 	g.timeToLength()
+	//add element to InputsToFruit
+	data := InputsToFruit{
+		FruitNumber: len(g.Snake),
+		Inputs:      NumberInputsToFruit,
+	}
+	g.Metrics.InputsToFruit = append(g.Metrics.InputsToFruit, data)
+	NumberInputsToFruit = 0
+
+	g.pathFitness()
 }
 
 func (g *Game) MoveSnake() {

@@ -86,7 +86,7 @@ func update() {
 				Timestamp: time.Now(),
 			}
 			gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
-
+			game.NumberInputsToFruit++
 		}
 
 		if gameState.Debug {
@@ -100,6 +100,7 @@ func update() {
 func Main(state *game.Game) {
 	gameState = state
 
+	//TODO render height based on screen size
 	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
 	screenHeight = 2*rectangleSize + (int32(gameState.Rows) * rectangleSize)
 	rl.InitWindow(screenWidth, screenHeight, "Snake")
