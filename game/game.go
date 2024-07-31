@@ -36,6 +36,13 @@ var (
 	Stop  = Direction{X: 0, Y: 0}
 )
 
+var DirectionMap = map[Direction]string{
+	Up:    "Up",
+	Down:  "Down",
+	Right: "Right",
+	Left:  "Left",
+}
+
 func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	//Initialize Game
 	g.Debug = debug
@@ -88,8 +95,6 @@ func (g *Game) MoveSnake() {
 		X: (g.Snake[0].X + g.CurrentDirection.X),
 		Y: (g.Snake[0].Y + g.CurrentDirection.Y),
 	}
-
-	//TODO Bug: if newHead hits last part game over but should not cause game over
 
 	//check collision
 	if newHead.X >= g.Columns || newHead.Y >= g.Rows {

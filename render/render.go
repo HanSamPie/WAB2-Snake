@@ -25,11 +25,6 @@ func input() {
 	if (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) && lastDirection.Y != 1 {
 		//change direction to up
 		gameState.CurrentDirection = game.Up
-		data := game.DirectionChange{
-			Direction: "up",
-			Timestamp: time.Now(),
-		}
-		gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
 	} else if rl.IsKeyDown(rl.KeyA) || rl.IsKeyDown(rl.KeyLeft) && lastDirection.X != 1 {
 		//change direction to left
 		gameState.CurrentDirection = game.Left
@@ -82,8 +77,16 @@ func update() {
 		gameState.MoveSnake()
 
 		frameCount = 0
-		if gameState.CurrentDirection != game.Stop {
+		if gameState.CurrentDirection != game.Stop && gameState.CurrentDirection != lastDirection {
 			lastDirection = gameState.CurrentDirection
+
+			//add element to DirectionChanges
+			data := game.DirectionChange{
+				Direction: game.DirectionMap[lastDirection],
+				Timestamp: time.Now(),
+			}
+			gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
+
 		}
 
 		if gameState.Debug {
