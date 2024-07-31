@@ -56,7 +56,6 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Metrics.SessionID = "asdf"
 	g.Metrics.PlayerID = "Hans"
 	g.Metrics.StartTime = time.Now()
-	//TODO at GameOver remove empty values?
 	g.Metrics.TimeToLength = []LengthTime{{
 		Length:    1,
 		TimeSince: 0,
@@ -103,7 +102,7 @@ func (g *Game) MoveSnake() {
 		g.setGameOver("border")
 		g.CurrentDirection = Stop
 		return
-	} else if g.Grid[newHead.Y][newHead.X] == SNAKE {
+	} else if g.Grid[newHead.Y][newHead.X] == SNAKE && g.Snake[len(g.Snake)-1] != newHead {
 		//handle game over
 		g.setGameOver("tail")
 		g.CurrentDirection = Stop

@@ -19,7 +19,6 @@ const (
 )
 
 func renderSnake() {
-	//TODO make tail smooth
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
 		x := int32(part.X + 1)
