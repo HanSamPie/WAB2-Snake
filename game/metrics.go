@@ -1,7 +1,10 @@
 package game
 
 import (
+	"image/color"
 	"time"
+
+	"github.com/fogleman/gg"
 )
 
 type Metrics struct {
@@ -66,6 +69,8 @@ func (g *Game) setGameOver(gameOver string) {
 		}(g.Snake[0]),
 	}
 	g.Metrics.MeanTimeToFruit = (g.Metrics.EndTime.Sub(g.Metrics.StartTime)) / time.Duration(g.Metrics.FinalLength)
+	//TODO remember to delete this before running it on server since I don't want to send a png in addition to the json
+	g.generateHeatmap()
 
 	g.test()
 }
@@ -136,4 +141,23 @@ func (g *Game) heatmap(newHead position) {
 	}
 	g.Metrics.Heatmap = append(g.Metrics.Heatmap, data)
 
+}
+
+func (g *Game) generateHeatmap() {
+	maxCount := 0
+	for _, element := range g.Metrics.Heatmap {
+		if element.Visits > maxCount {
+			maxCount = element.Visits
+		}
+	}
+	dc := gg.NewContext(g.Rows*20, g.Columns*20)
+	for _, element := range g.Metrics.Heatmap {
+		intensity := float64(element.Visits) / float64(maxCount)
+		color := color.RGBA{R: 0, G: 0, B: uint8(255 * intensity), A: 255}
+		dc.SetColor(color)
+		dc.DrawRectangle(float64(element.X*20), float64(element.Y*20), 20, 20)
+		dc.Fill()
+	}
+
+	dc.SavePNG("heatmap.png")
 }
