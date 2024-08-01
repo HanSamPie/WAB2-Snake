@@ -12,6 +12,7 @@ require (
 require (
 	github.com/ebitengine/purego v0.7.1 // indirect
 	github.com/fogleman/gg v1.3.0
+	github.com/gorilla/mux v1.8.1
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 )

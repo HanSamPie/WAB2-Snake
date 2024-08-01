@@ -124,6 +124,7 @@ func tubeHeadHorizontal(x int32, y int32) {
 	}
 }
 
+// TODO save these functions as vars, to avoid reusing the same call multiple times
 func tubeVertical(x int32, y int32) {
 	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize, rl.Black)
 }

@@ -1,8 +1,11 @@
 package game
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"image/color"
+	"net/http"
 	"os"
 	"time"
 
@@ -79,10 +82,11 @@ func (g *Game) setGameOver(gameOver string) {
 	//TODO remember to delete this before running it on server since I don't want to send a png in addition to the json
 	g.generateHeatmap()
 
-	g.saveGameData()
+	SendGameData(g.Metrics)
 
 	if g.Debug {
 		g.test()
+		saveGameData(g.Metrics)
 	}
 }
 
@@ -174,7 +178,27 @@ func (g *Game) generateHeatmap() {
 	dc.SavePNG("heatmap.png")
 }
 
-func (g *Game) saveGameData() {
-	file, _ := json.MarshalIndent(g.Metrics, "", "  ")
+func saveGameData(data Metrics) {
+	file, _ := json.MarshalIndent(data, "", "  ")
 	_ = os.WriteFile("game_data.json", file, 0644)
+}
+
+func SendGameData(data Metrics) error {
+	url := "http://localhost:8080/submit"
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to submit data: %v", resp.Status)
+	}
+
+	return nil
 }
