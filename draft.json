@@ -5,7 +5,7 @@
   "end_time": "timestamp",
   "final_length": "integer",
   "time_to_length": [
-    {"length": "integer", "time_since": "time"}
+    {"length": "integer", "time_since": "time", "timestamp": "timestamp"}
   ],
   "mean_time_to_fruit": "time",
   "direction_changes": [
