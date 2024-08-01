@@ -25,8 +25,9 @@ type Metrics struct {
 }
 
 type LengthTime struct {
-	Length    int     `json:"length"`
-	TimeSince float64 `json:"time_since"`
+	Length    int       `json:"length"`
+	TimeSince float64   `json:"time_since"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 type DirectionChange struct {
@@ -93,6 +94,7 @@ func (g *Game) timeToLength() {
 	data := LengthTime{
 		Length:    len(g.Snake),
 		TimeSince: time.Duration.Seconds(time.Since(g.Metrics.StartTime) - passedTime),
+		Timestamp: time.Now(),
 	}
 	g.Metrics.TimeToLength = append(g.Metrics.TimeToLength, data)
 }
