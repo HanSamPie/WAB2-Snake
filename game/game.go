@@ -71,6 +71,7 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Metrics.TimeToLength = []LengthTime{{
 		Length:    1,
 		TimeSince: 0,
+		Timestamp: g.Metrics.StartTime,
 	}}
 	g.Metrics.DirectionChanges = make([]DirectionChange, 0)
 	//setting initial Optimal Path
