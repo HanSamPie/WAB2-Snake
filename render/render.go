@@ -12,7 +12,7 @@ import (
 
 var (
 	running             = true
-	rectangleSize int32 = 50
+	rectangleSize int32 = 100
 	FPS           int   = 90
 	frameCount    int   = 0
 	screenWidth   int32
@@ -68,12 +68,31 @@ func render() {
 	rl.BeginDrawing()
 
 	//TODO for now setting it to running
-	renderState = gameRunning
+	renderState = startGame
 	switch renderState {
 	case getInformation:
 
 	case startGame:
+		renderBoard()
+		renderSnake()
 
+		//TODO either move text or add see through filter over game
+
+		start := "Press Enter to start the game!"
+		fontSize := 20
+		textWidth := rl.MeasureText(start, rectangleSize/2)
+		textHeight := fontSize // Simplified; you might want to adjust based on actual font metrics
+
+		// Calculating the center position
+		x := (screenWidth / 2) - (textWidth / 2)
+		y := (screenHeight / 2) - int32((textHeight / 2))
+		rl.DrawText(start, x, y, rectangleSize/2, rl.Black)
+		rl.DrawText("You can control the snake by using WASD or the Arrow keys.", 15, 15, rectangleSize/2, rl.Black)
+		explanation := "Explanation:\n" +
+			"The goal of the game is to make your snake as long as possible.\n" +
+			"To increase your snakes length you have to eat the food (red square).\n" +
+			"Crashing into yourself or the border will end the game."
+		rl.DrawText(explanation, rectangleSize/2, screenHeight-3*rectangleSize, rectangleSize/3, rl.Black)
 	case gameRunning:
 		renderBoard()
 		renderSnake()
@@ -90,27 +109,33 @@ func render() {
 
 func update() {
 	running = !rl.WindowShouldClose()
-	frameCount++
-	if frameCount == FPS/6 && gameState.CurrentDirection != game.Stop {
-		gameState.MoveSnake()
+	//ensure that game is only running when the render state == gameRunning
+	if renderState == gameRunning {
+		frameCount++
+		//define the number of updates per seconds
+		if frameCount == FPS/6 && gameState.CurrentDirection != game.Stop {
+			gameState.MoveSnake()
 
-		frameCount = 0
-		if gameState.CurrentDirection != game.Stop && gameState.CurrentDirection != lastDirection {
-			lastDirection = gameState.CurrentDirection
+			frameCount = 0
 
-			//add element to DirectionChanges
-			data := game.DirectionChange{
-				Direction: game.DirectionMap[lastDirection],
-				Timestamp: time.Now(),
+			//change direction and add data to metrics
+			if gameState.CurrentDirection != game.Stop && gameState.CurrentDirection != lastDirection {
+				lastDirection = gameState.CurrentDirection
+
+				//add element to DirectionChanges
+				data := game.DirectionChange{
+					Direction: game.DirectionMap[lastDirection],
+					Timestamp: time.Now(),
+				}
+				gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
+				game.NumberInputsToFruit++
 			}
-			gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
-			game.NumberInputsToFruit++
-		}
 
-		if gameState.Debug {
-			fmt.Println(gameState.CurrentDirection)
-		}
+			if gameState.Debug {
+				fmt.Println(gameState.CurrentDirection)
+			}
 
+		}
 	}
 
 }
