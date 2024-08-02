@@ -19,6 +19,14 @@ var (
 	screenHeight  int32
 	lastDirection = game.Right
 	gameState     *game.Game
+	renderState   int = 0
+)
+
+const (
+	getInformation = iota
+	startGame
+	gameRunning
+	gameOver
 )
 
 func input() {
@@ -59,13 +67,23 @@ func renderBoard() {
 func render() {
 	rl.BeginDrawing()
 
-	//TODO implement game over screen
-	renderBoard()
-	renderSnake()
+	//TODO for now setting it to running
+	renderState = gameRunning
+	switch renderState {
+	case getInformation:
 
-	//renders score
-	score := "length: " + strconv.Itoa(len(gameState.Snake))
-	rl.DrawText(score, 15, 15, rectangleSize/2, rl.White)
+	case startGame:
+
+	case gameRunning:
+		renderBoard()
+		renderSnake()
+
+		//renders score
+		score := "length: " + strconv.Itoa(len(gameState.Snake))
+		rl.DrawText(score, 15, 15, rectangleSize/2, rl.White)
+	case gameOver:
+		//TODO implement game over screen
+	}
 
 	rl.EndDrawing()
 }
