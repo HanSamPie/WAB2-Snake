@@ -1,10 +1,14 @@
 package game
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"time"
 
 	"math/rand"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -65,8 +69,8 @@ func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
 	g.Grid[g.Columns/2][2*g.Rows/3] = FOOD
 
 	//Initialize Metrics
-	g.Metrics.SessionID = "asdf"
-	g.Metrics.PlayerID = "Hans"
+	g.Metrics.SessionID = uuid.New().String()
+	g.Metrics.PlayerID = hashEmail("Hans") //change to email once input field works
 	g.Metrics.StartTime = time.Now()
 	g.Metrics.TimeToLength = []LengthTime{{
 		Length:    1,
@@ -172,6 +176,12 @@ func (g *Game) MoveSnake() {
 	if g.Debug {
 		g.test()
 	}
+}
+
+func hashEmail(email string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(email))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 func (g *Game) test() {
