@@ -2,21 +2,31 @@ package render
 
 import (
 	"fmt"
+	"image/color"
 	"projects/game"
 	"strconv"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 var (
 	running             = true
-	rectangleSize int32 = 50
+	rectangleSize int32 = 100
 	FPS           int   = 90
 	frameCount    int   = 0
 	screenWidth   int32
 	screenHeight  int32
-	gameState     *game.GameState
 	lastDirection = game.Right
+	gameState     *game.Game
+	renderState   int = 0
+)
+
+const (
+	getInformation = iota
+	startGame
+	gameRunning
+	gameOver
 )
 
 func input() {
@@ -41,13 +51,15 @@ func renderBoard() {
 	//renders checkered board
 	for rows := 0; rows < gameState.Rows; rows++ {
 		for columns := 0; columns < gameState.Columns; columns++ {
+			var color color.RGBA
 			if gameState.Grid[rows][columns] == game.FOOD {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Red)
+				color = rl.Red
 			} else if (rows+columns)%2 == 0 {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Green)
+				color = rl.Green
 			} else {
-				rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, rl.Lime)
+				color = rl.Lime
 			}
+			rl.DrawRectangle(int32(columns+1)*rectangleSize, int32(rows+1)*rectangleSize, rectangleSize, rectangleSize, color)
 		}
 	}
 }
@@ -55,43 +67,86 @@ func renderBoard() {
 func render() {
 	rl.BeginDrawing()
 
-	//TODO implement game over screen
-	renderBoard()
+	//TODO for now setting it to running
+	renderState = startGame
+	switch renderState {
+	case getInformation:
 
-	renderSnake()
+	case startGame:
+		renderBoard()
+		renderSnake()
 
-	//renders score
-	score := "length: " + strconv.Itoa(len(gameState.Snake))
-	rl.DrawText(score, 15, 15, rectangleSize/2, rl.White)
+		//TODO either move text or add see through filter over game
+
+		start := "Press Enter to start the game!"
+		fontSize := 20
+		textWidth := rl.MeasureText(start, rectangleSize/2)
+		textHeight := fontSize // Simplified; you might want to adjust based on actual font metrics
+
+		// Calculating the center position
+		x := (screenWidth / 2) - (textWidth / 2)
+		y := (screenHeight / 2) - int32((textHeight / 2))
+		rl.DrawText(start, x, y, rectangleSize/2, rl.Black)
+		rl.DrawText("You can control the snake by using WASD or the Arrow keys.", 15, 15, rectangleSize/2, rl.Black)
+		explanation := "Explanation:\n" +
+			"The goal of the game is to make your snake as long as possible.\n" +
+			"To increase your snakes length you have to eat the food (red square).\n" +
+			"Crashing into yourself or the border will end the game."
+		rl.DrawText(explanation, rectangleSize/2, screenHeight-3*rectangleSize, rectangleSize/3, rl.Black)
+	case gameRunning:
+		renderBoard()
+		renderSnake()
+
+		//renders score
+		score := "length: " + strconv.Itoa(len(gameState.Snake))
+		rl.DrawText(score, 15, 15, rectangleSize/2, rl.White)
+	case gameOver:
+		//TODO implement game over screen
+	}
 
 	rl.EndDrawing()
 }
 
 func update() {
 	running = !rl.WindowShouldClose()
-	frameCount++
-	if frameCount == FPS/6 && gameState.CurrentDirection != game.GameOver {
-		game.MoveSnake()
+	//ensure that game is only running when the render state == gameRunning
+	if renderState == gameRunning {
+		frameCount++
+		//define the number of updates per seconds
+		if frameCount == FPS/6 && gameState.CurrentDirection != game.Stop {
+			gameState.MoveSnake()
 
-		frameCount = 0
-		if gameState.CurrentDirection != game.GameOver {
-			lastDirection = gameState.CurrentDirection
+			frameCount = 0
+
+			//change direction and add data to metrics
+			if gameState.CurrentDirection != game.Stop && gameState.CurrentDirection != lastDirection {
+				lastDirection = gameState.CurrentDirection
+
+				//add element to DirectionChanges
+				data := game.DirectionChange{
+					Direction: game.DirectionMap[lastDirection],
+					Timestamp: time.Now(),
+				}
+				gameState.Metrics.DirectionChanges = append(gameState.Metrics.DirectionChanges, data)
+				game.NumberInputsToFruit++
+			}
+
+			if gameState.Debug {
+				fmt.Println(gameState.CurrentDirection)
+			}
+
 		}
-
-		if gameState.Debug {
-			fmt.Println(gameState.CurrentDirection)
-		}
-
 	}
 
 }
 
-func Main(state *game.GameState) {
+func Main(state *game.Game) {
 	gameState = state
 
-	screenWidth = 100 + (int32(gameState.Columns) * rectangleSize)
-	screenHeight = 100 + (int32(gameState.Rows) * rectangleSize)
-	rl.InitWindow(screenWidth, screenHeight, "Hello there")
+	//TODO render height based on screen size
+	screenWidth = 2*rectangleSize + (int32(gameState.Columns) * rectangleSize)
+	screenHeight = 2*rectangleSize + (int32(gameState.Rows) * rectangleSize)
+	rl.InitWindow(screenWidth, screenHeight, "Snake")
 	defer rl.CloseWindow()
 
 	//rl.SetExitKey(0)
@@ -99,7 +154,10 @@ func Main(state *game.GameState) {
 	rl.SetTargetFPS(int32(FPS))
 
 	for running {
-		input()
+		//or check for Stop on each move
+		if gameState.CurrentDirection != game.Stop {
+			input()
+		}
 		update()
 		render()
 	}

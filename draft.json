@@ -1,0 +1,27 @@
+{
+  "session_id": "string",
+  "player_id": "string",
+  "start_time": "timestamp",
+  "end_time": "timestamp",
+  "final_length": "integer",
+  "time_to_length": [
+    {"length": "integer", "time_since": "time", "timestamp": "timestamp"}
+  ],
+  "mean_time_to_fruit": "time",
+  "direction_changes": [
+    {"direction": "string","timestamp": "timestamp"}
+  ],
+  "inputs_to_fruit": [
+    {"fruit_number": "integer", "inputs": "integer"}
+  ],
+  "path_fitness": [
+    {"fruit_number": "integer", "actual_path": "integer", "optimal_path": "integer", "path_ratio": "float"}
+  ],
+  "heatmap": [
+    {"x": "integer", "y": "integer", "visits": "integer"}
+  ],
+  "game_over": {
+    "cause": "string",
+    "position": {"x": "integer", "y": "integer"}
+  }
+}

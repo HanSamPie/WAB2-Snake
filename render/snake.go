@@ -19,7 +19,6 @@ const (
 )
 
 func renderSnake() {
-	//TODO make tail smooth
 	for i, part := range gameState.Snake {
 		neighbor := checkNeighbors(i)
 		x := int32(part.X + 1)
@@ -40,7 +39,7 @@ func renderSnake() {
 			cornerRightTop(x, y)
 		} else if neighbor == rightDown {
 			cornerRightDown(x, y)
-		} else if neighbor == -1 && gameState.CurrentDirection != game.GameOver {
+		} else if neighbor == -1 && gameState.CurrentDirection != game.Stop {
 			log.Fatal("render snake neighbor -1; or in other words I fucked up")
 		}
 	}
@@ -125,6 +124,7 @@ func tubeHeadHorizontal(x int32, y int32) {
 	}
 }
 
+// TODO save these functions as vars, to avoid reusing the same call multiple times
 func tubeVertical(x int32, y int32) {
 	rl.DrawRectangle(x*rectangleSize+rectangleSize*3/10, y*rectangleSize, rectangleSize*2/5, rectangleSize, rl.Black)
 }

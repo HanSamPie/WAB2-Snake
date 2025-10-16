@@ -1,9 +1,14 @@
 package game
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"time"
 
 	"math/rand"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -17,117 +22,180 @@ type position struct {
 	X, Y int
 }
 type Direction position
-type GameState struct {
+type Game struct {
 	CurrentDirection Direction
 	Snake            []position
 	Grid             [][]cell
 	Columns          int
 	Rows             int
 	Debug            bool
+	Metrics          Metrics
 }
 
 var (
-	Up       = Direction{X: 0, Y: -1}
-	Down     = Direction{X: 0, Y: 1}
-	Right    = Direction{X: 1, Y: 0}
-	Left     = Direction{X: -1, Y: 0}
-	GameOver = Direction{X: 0, Y: 0}
+	Up    = Direction{X: 0, Y: -1}
+	Down  = Direction{X: 0, Y: 1}
+	Right = Direction{X: 1, Y: 0}
+	Left  = Direction{X: -1, Y: 0}
+	Stop  = Direction{X: 0, Y: 0}
 
-	gameState *GameState
+	NumberInputsToFruit = 0
+	pathLength          = 0
+	optimalPath         = 0
 )
 
-func InitGame(columns int, rows int, debug bool) *GameState {
-	var state GameState
-	gameState = &state
-	state.Debug = debug
-	state.CurrentDirection = Right
-	state.Columns = columns
-	state.Rows = rows
-
-	state.Grid = make([][]cell, state.Rows)
-	for i := range state.Grid {
-		state.Grid[i] = make([]cell, state.Columns)
-	}
-	initialPosition := position{X: state.Rows / 3, Y: state.Columns / 2}
-	state.Snake = append(state.Snake, initialPosition)
-	state.Grid[state.Snake[0].Y][state.Snake[0].X] = SNAKE
-	state.Grid[state.Rows/2][2*state.Columns/3] = FOOD
-
-	if debug {
-		test()
-	}
-
-	return &state
+var DirectionMap = map[Direction]string{
+	Up:    "Up",
+	Down:  "Down",
+	Right: "Right",
+	Left:  "Left",
 }
 
-func placeFood() {
+func (g *Game) InitGame(columns int, rows int, debug bool) *Game {
+	//Initialize Game
+	g.Debug = debug
+	g.CurrentDirection = Right
+	g.Columns = columns
+	g.Rows = rows
+	//Initialize grid with Snake & Food
+	g.Grid = make([][]cell, g.Rows)
+	for i := range g.Grid {
+		g.Grid[i] = make([]cell, g.Columns)
+	}
+	initialPosition := position{X: g.Rows / 3, Y: g.Columns / 2}
+	g.Snake = append(g.Snake, initialPosition)
+	//update Grid
+	g.Grid[g.Snake[0].Y][g.Snake[0].X] = SNAKE
+	g.Grid[g.Columns/2][2*g.Rows/3] = FOOD
+
+	//Initialize Metrics
+	g.Metrics.SessionID = uuid.New().String()
+	g.Metrics.PlayerID = hashEmail("Hans") //change to email once input field works
+	g.Metrics.StartTime = time.Now()
+	g.Metrics.TimeToLength = []LengthTime{{
+		Length:    1,
+		TimeSince: 0,
+		Timestamp: g.Metrics.StartTime,
+	}}
+	g.Metrics.DirectionChanges = make([]DirectionChange, 0)
+	//setting initial Optimal Path
+	optimalPath = calcOptimalPath(g.Snake[0].X, g.Columns/2, g.Snake[0].Y, 2*g.Rows/3)
+	fmt.Println(g.Snake[0].X, g.Columns/3, g.Snake[0].Y, g.Rows/2, optimalPath)
+
+	//setting initial value of heatmap
+	data := Heatmap{
+		X:      g.Snake[0].X,
+		Y:      g.Snake[0].Y,
+		Visits: 1,
+	}
+	g.Metrics.Heatmap = append(g.Metrics.Heatmap, data)
+
+	//Debug
+	if g.Debug {
+		g.test()
+	}
+
+	return g
+}
+
+func (g *Game) placeFood() (int, int) {
+	var x, y int
 	for {
-		x := rand.Intn(gameState.Columns)
-		y := rand.Intn(gameState.Rows)
-		if gameState.Grid[y][x] == EMPTY {
-			gameState.Grid[y][x] = FOOD
+		x = rand.Intn(g.Columns)
+		y = rand.Intn(g.Rows)
+		if g.Grid[y][x] == EMPTY {
+			g.Grid[y][x] = FOOD
 			break
 		}
 	}
+	//add element to timeToLength
+	g.timeToLength()
+	//add element to InputsToFruit
+	g.inputsToFruit()
+	return x, y
 }
 
-func MoveSnake() {
+func (g *Game) MoveSnake() {
 	//new position
 	newHead := position{
-		X: (gameState.Snake[0].X + gameState.CurrentDirection.X),
-		Y: (gameState.Snake[0].Y + gameState.CurrentDirection.Y),
+		X: (g.Snake[0].X + g.CurrentDirection.X),
+		Y: (g.Snake[0].Y + g.CurrentDirection.Y),
 	}
 
 	//check collision
-	if newHead.X >= gameState.Columns || newHead.Y >= gameState.Rows {
+	if newHead.X >= g.Columns || newHead.Y >= g.Rows {
 		//handle Game Over
-		gameState.CurrentDirection = GameOver
+		g.setGameOver("border")
+		g.CurrentDirection = Stop
 		return
 	} else if newHead.X < 0 || newHead.Y < 0 { //check boundary collision
 		//handle game over
-		gameState.CurrentDirection = GameOver
+		g.setGameOver("border")
+		g.CurrentDirection = Stop
 		return
-	} else if gameState.Grid[newHead.Y][newHead.X] == SNAKE {
+	} else if g.Grid[newHead.Y][newHead.X] == SNAKE && g.Snake[len(g.Snake)-1] != newHead {
 		//handle game over
-		gameState.CurrentDirection = GameOver
+		g.setGameOver("tail")
+		g.CurrentDirection = Stop
 		return
 	}
+
+	//increase pathLength
+	pathLength++
+
 	//check food eaten
-	if gameState.Grid[newHead.Y][newHead.X] == FOOD {
-		placeFood()
-		gameState.Grid[newHead.Y][newHead.X] = SNAKE
+	if g.Grid[newHead.Y][newHead.X] == FOOD {
+
+		x, y := g.placeFood()
+		g.Grid[newHead.Y][newHead.X] = SNAKE
 
 		//add head
-		newSnake := append([]position{newHead}, gameState.Snake...)
-		gameState.Snake = newSnake
+		newSnake := append([]position{newHead}, g.Snake...)
+		g.Snake = newSnake
+
+		//add element to pathFitness
+		g.pathFitness(x, y)
 	} else {
 		//remove tail
-		tail := gameState.Snake[len(gameState.Snake)-1]
-		gameState.Snake = gameState.Snake[:len(gameState.Snake)-1]
-		//add head
-		newSnake := append([]position{newHead}, gameState.Snake...)
-		gameState.Snake = newSnake
+		tail := g.Snake[len(g.Snake)-1]
+		g.Snake = g.Snake[:len(g.Snake)-1]
+		//add newHead
+		newSnake := append([]position{newHead}, g.Snake...)
+		g.Snake = newSnake
 
 		//update grid
-		gameState.Grid[tail.Y][tail.X] = EMPTY
+		g.Grid[tail.Y][tail.X] = EMPTY
 	}
 
 	//add newHead to grid
-	gameState.Grid[newHead.Y][newHead.X] = SNAKE
+	g.Grid[newHead.Y][newHead.X] = SNAKE
 
-	if gameState.Debug {
-		test()
+	//update Heatmap
+	g.heatmap(newHead)
+
+	if g.Debug {
+		g.test()
 	}
 }
 
-func test() {
-	printDirection()
-	fmt.Println(gameState.Snake)
-	printGrid()
+func hashEmail(email string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(email))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func printDirection() {
-	switch gameState.CurrentDirection {
+func (g *Game) test() {
+	g.printDirection()
+	fmt.Println(g.Snake)
+	g.printGrid()
+
+	if g.Metrics.FinalLength != 0 {
+		fmt.Println(g.Metrics)
+	}
+}
+
+func (g *Game) printDirection() {
+	switch g.CurrentDirection {
 	case Up:
 		print("UP")
 	case Right:
@@ -137,14 +205,14 @@ func printDirection() {
 	case Left:
 		print("LEFT")
 	}
-	print(gameState.CurrentDirection.X)
-	println(gameState.CurrentDirection.Y)
+	print(g.CurrentDirection.X)
+	println(g.CurrentDirection.Y)
 }
 
-func printGrid() {
-	for i := 0; i < gameState.Rows; i++ {
-		for j := 0; j < gameState.Columns; j++ {
-			print(gameState.Grid[i][j])
+func (g *Game) printGrid() {
+	for i := 0; i < g.Rows; i++ {
+		for j := 0; j < g.Columns; j++ {
+			print(g.Grid[i][j])
 		}
 		print("\n")
 	}
